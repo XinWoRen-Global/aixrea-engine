@@ -184,18 +184,23 @@ Les contributions sont les bienvenues ! Voir [CONTRIBUTING.md](./CONTRIBUTING.md
 
 ## Version open source vs Version commerciale
 
-| Couche | Version open source (ce dépôt) | Plateforme commerciale |
+Ce dépôt est le **framework open-source** — utilisez-le pour construire vos propres applications d'agents IA, en auto-hébergement, avec un contrôle total sur vos données et votre infrastructure.
+
+La **plateforme commerciale** ([aixrea.com](https://aixrea.com) / [xinworen.com](https://xinworen.com)) est un SaaS managé construit sur ce framework. Ce n'est pas une version "source disponible" de ce dépôt — c'est un produit séparé avec hébergement managé, opérations et services de plateforme.
+
+| | Version open source (ce dépôt) | Plateforme commerciale |
 |---|---|---|
-| Framework agent | ✅ | ✅ |
-| SDK compétences | ✅ | ✅ |
-| Exécuteur pipeline DAG | ✅ | ✅ |
-| Framework garde-fous contenu | ✅ | ✅ |
-| Facturation / registre crédits | ❌ | ✅ |
-| Marketplace / boutique | ❌ | ✅ |
-| Distribution de contenu | ❌ | ✅ |
-| Moteur de recommandation | ❌ | ✅ |
-| Routage multi-domaines | ❌ | ✅ |
-| Outils de création (drame/musique/comic) | ❌ | ✅ |
+| **Ce que vous obtenez** | Framework & SDK, code source complet | Plateforme SaaS managée, sans DevOps |
+| **Déploiement** | Auto-hébergé, votre infrastructure | Entièrement managé, CDN global, auto-scaling |
+| **Runtime agent** | ✅ Inclus | ✅ Inclus (même moteur) |
+| **SDK compétences** | ✅ Inclus | ✅ Inclus |
+| **Exécuteur pipeline DAG** | ✅ Inclus | ✅ Inclus |
+| **Opérations & SLA** | ❌ Vous l'exploitez | ✅ SLA 99.9%, monitoring 24/7 |
+| **Services managés** | ❌ Construisez les vôtres | ✅ Facturation, gestion utilisateurs, distribution |
+| **Support** | Communauté / GitHub Issues | ✅ Support prioritaire, ingénieur dédié |
+| **Idéal pour** | Développeurs, startups, auto-hébergeurs | Équipes voulant une plateforme prête à l'emploi |
+
+> Le framework open-source est le même moteur qui alimente notre plateforme commerciale. Nous ne retenons pas les capacités core des agents — nous vendons des **opérations managées et des services de plateforme**, pas des fonctionnalités.
 
 Dépôt open source : [github.com/XinWoRen-Global/aixrea-engine](https://github.com/XinWoRen-Global/aixrea-engine)
 

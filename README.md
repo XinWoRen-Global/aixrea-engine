@@ -216,26 +216,25 @@ See [COMMERCIAL.md](./COMMERCIAL.md) for details.
 
 ---
 
-## Open Source vs Commercial Platform
+## Open Source vs Commercial
 
-This repository contains the **open-source framework** (Aixrea Engine). The commercial platform running at [aixrea.com](https://aixrea.com) and [xinworen.com](https://xinworen.com) includes additional proprietary modules:
+This repository is the **open-source framework** — use it to build your own AI agent applications, self-hosted, with full control over your data and infrastructure.
 
-| Layer | Open Source (this repo) | Commercial Platform |
+The **commercial platform** ([aixrea.com](https://aixrea.com) / [xinworen.com](https://xinworen.com)) is a managed SaaS built on top of this framework. It is not a "source-available" version of this repo — it is a separate product with managed hosting, operations, and platform services.
+
+| | Open Source (this repo) | Commercial Platform |
 |---|---|---|
-| Agent framework / runtime | ✅ | ✅ |
-| Skill SDK / tool use | ✅ | ✅ |
-| Pipeline DAG executor | ✅ | ✅ |
-| Content guardrail framework | ✅ | ✅ |
-| Multi-agent orchestration | ✅ | ✅ |
-| Persistent memory (Redis) | ✅ | ✅ |
-| Billing / credits ledger | ❌ | ✅ |
-| Marketplace / store frontend | ❌ | ✅ |
-| Content distribution | ❌ | ✅ |
-| Recommendation engine | ❌ | ✅ |
-| Multi-domain routing (CN/global) | ❌ | ✅ |
-| Creation tools (drama/music/comic/novel) | ❌ | ✅ |
-| User dashboard / analytics | ❌ | ✅ |
-| Managed hosting / SLA | ❌ | ✅ |
+| **What you get** | Framework & SDK, full source code | Managed SaaS platform, no DevOps needed |
+| **Deployment** | Self-hosted, your infrastructure | Fully managed, global CDN, auto-scaling |
+| **Agent runtime** | ✅ Included | ✅ Included (same engine) |
+| **Skill SDK** | ✅ Included | ✅ Included |
+| **DAG pipeline executor** | ✅ Included | ✅ Included |
+| **Operations & SLA** | ❌ You operate it | ✅ 99.9% uptime SLA, 24/7 monitoring |
+| **Managed services** | ❌ Build your own | ✅ Billing, user management, content delivery |
+| **Support** | Community / GitHub Issues | ✅ Priority support, dedicated engineer |
+| **Best for** | Builders, startups, self-hosters | Teams who want a ready-to-use platform |
+
+> The open-source framework is the same engine that powers our commercial platform. We don't hold back core agent capabilities — we sell **managed operations and platform services**, not features.
 
 Open-source repo: [github.com/XinWoRen-Global/aixrea-engine](https://github.com/XinWoRen-Global/aixrea-engine)
 
