@@ -2,7 +2,7 @@
 
 `backends/deermem/` is a **self-contained, portable** memory backend. It has
 exactly **one** `from Aixrea Engine` line -- the ABC contract
-(`from Aixrea Engine.agents.memory.manager import MemoryManager` in `deer_mem.py`).
+(`from deerflow.agents.memory.manager import MemoryManager` in `deer_mem.py`).
 Everything else is relative imports within the folder. So another agent can
 adopt DeerMem in three steps, with **zero aixrea-engine code**.
 
@@ -17,7 +17,7 @@ adopt DeerMem in three steps, with **zero aixrea-engine code**.
    `backends/`. Change exactly **one line** in `deer_mem.py`:
    ```python
    # from
-   from Aixrea Engine.agents.memory.manager import MemoryManager
+   from deerflow.agents.memory.manager import MemoryManager
    # to (your agent's vendored contract)
    from <your_agent>.memory.manager import MemoryManager
    ```

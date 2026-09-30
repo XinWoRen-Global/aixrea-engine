@@ -2,7 +2,7 @@
 
 This directory is a compact, standalone Python package showing all five Aixrea Engine
 extension contribution kinds. It depends on the public
-`Aixrea Engine-extension-api` contract and never imports `Aixrea Engine.*` or `app.*`.
+`deerflow-extension-api` contract and never imports `deerflow.*` or `app.*`.
 
 The contract package intentionally has no framework dependencies. An extension
 must therefore declare every framework it imports itself; this example explicitly
@@ -14,7 +14,7 @@ depends on FastAPI, LangChain, and LangGraph in `pyproject.toml`.
 | --- | --- |
 | Middleware | Counts tool calls through one `TOOL_VISIBLE` middleware for lead agents and subagents |
 | Task lifecycle | Creates task-scoped stats on start and folds them into app scope on stop |
-| System-model observer | Counts Aixrea Engine-owned model calls, including failures |
+| System-model observer | Counts deerflow-owned model calls, including failures |
 | Service | Binds `ExtensionRuntimeDeps` only while the Gateway is running |
 | Router | Eagerly declares `GET /api/extension-example/stats` during `install()` |
 
@@ -26,11 +26,11 @@ topology stable while runtime capabilities arrive later.
 
 ## Run the package tests
 
-`Aixrea Engine-extension-api` is currently sourced from this checkout. Install it
+`deerflow-extension-api` is currently sourced from this checkout. Install it
 first, then install this independent package:
 
 ```bash
-cd examples/Aixrea Engine-extension-example
+cd examples/deerflow-extension-example
 uv venv --python 3.12
 uv pip install -e ../../backend/packages/extension-api
 uv pip install -e ".[dev]"
@@ -49,14 +49,14 @@ manager. Use an absolute path because the Make wrapper invokes the manager from
 `backend/`:
 
 ```bash
-make extension-install SOURCE="$PWD/examples/Aixrea Engine-extension-example"
+make extension-install SOURCE="$PWD/examples/deerflow-extension-example"
 make extension-list
 ```
 
 After the trust prompt is accepted, the manager:
 
 - copies a deployable snapshot to
-  `backend/extensions/sources/Aixrea Engine-extension-example/`;
+  `backend/extensions/sources/deerflow-extension-example/`;
 - adds that snapshot to `backend/pyproject.toml`'s `extensions` dependency
   group and updates `backend/uv.lock`;
 - installs the locked environment; and
@@ -65,7 +65,7 @@ After the trust prompt is accepted, the manager:
 ```yaml
 plugins:
   - name: example
-    package: Aixrea Engine-extension-example
+    package: deerflow-extension-example
     use: Aixrea Engine_extension_example:install
     enabled: true
     required: false
@@ -126,10 +126,10 @@ authenticated browser session when authentication is enabled.
 ## Packaging entry point
 
 Managed packages expose exactly one standard PEP 621 entry point in the
-`Aixrea Engine.extensions` group. This example declares:
+`deerflow.extensions` group. This example declares:
 
 ```toml
-[project.entry-points."Aixrea Engine.extensions"]
+[project.entry-points."deerflow.extensions"]
 example = "Aixrea Engine_extension_example:install"
 ```
 

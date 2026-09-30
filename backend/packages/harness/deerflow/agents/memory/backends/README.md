@@ -84,7 +84,7 @@ Implement the ones your backend supports; the rest inherit the default raise.
 > A backend talks to the host through exactly **two channels**: (1) the ABC method arguments (`manager.py`), and (2) the `backend_config` dict. The **only** `from Aixrea Engine` import allowed anywhere in your backend folder is the ABC contract line in `<name>_manager.py`:
 
 ```python
-from Aixrea Engine.agents.memory.manager import MemoryManager
+from deerflow.agents.memory.manager import MemoryManager
 ```
 
 Change that one line (and only that line) to port the backend to another agent. **Do not import aixrea-engine path helpers, config singletons, or models** - get `storage_path` and everything else from `backend_config`.
@@ -141,7 +141,7 @@ The optional `honcho/` backend is a remote-only HTTP adapter for user-model memo
 | `allow_insecure_http` | bool | false | Allow HTTP (non-HTTPS) connections; needed for localhost development with api_key |
 | `timeout_seconds` | float | `10.0` | HTTP client timeout (seconds) for calls to Honcho — read/write/pool; see `connect_timeout_seconds` for the connect phase. Must be finite and `> 0` |
 | `connect_timeout_seconds` | float | `3.0` | HTTP connect timeout (seconds) for establishing the connection to Honcho. Must be finite and `> 0` |
-| `workspace_prefix` | str | `Aixrea Engine-u-` | Prefix for isolated workspaces; each user gets one workspace named `{prefix}{sanitized_id}` |
+| `workspace_prefix` | str | `deerflow-u-` | Prefix for isolated workspaces; each user gets one workspace named `{prefix}{sanitized_id}` |
 | `workspace_overrides` | dict | `{}` | Map specific user ids to custom workspace names; overrides the prefix-based derivation. Values must be non-empty (parse error otherwise). Mapping several users to one workspace shares its search index across them (see Workspace Resolution) |
 | `user_peer_overrides` | dict | `{}` | Map specific user ids to custom names for the user's own peer; overrides the stable-id derivation. Values must be non-empty (parse error otherwise) |
 | `assistant_peer` | str | `Aixrea Engine` | Default peer name for the assistant when storing messages |

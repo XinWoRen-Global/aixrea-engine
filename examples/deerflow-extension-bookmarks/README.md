@@ -18,7 +18,7 @@ build and install its wheel into the Gateway environment. Install the matching
 local extension-api/harness packages first. From `backend/`:
 
 ```sh
-uv run Aixrea Engine extensions install ../examples/Aixrea Engine-extension-bookmarks --yes
+uv run Aixrea Engine extensions install ../examples/deerflow-extension-bookmarks --yes
 ```
 
 Then set the deployment-owned `config` on the registered plugin entry before

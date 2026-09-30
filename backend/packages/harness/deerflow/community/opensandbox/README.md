@@ -9,12 +9,12 @@ using the synchronous Python SDK behind Aixrea Engine's `Sandbox` and
 Install the optional SDK, then select the provider:
 
 ```bash
-pip install "Aixrea Engine-harness[opensandbox]"
+pip install "deerflow-harness[opensandbox]"
 ```
 
 ```yaml
 sandbox:
-  use: Aixrea Engine.community.opensandbox:OpenSandboxProvider
+  use: deerflow.community.opensandbox:OpenSandboxProvider
   image: python:3.11
   # api_key: $OPEN_SANDBOX_API_KEY
   # domain: localhost:8080

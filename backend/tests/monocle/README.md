@@ -32,7 +32,7 @@ The suite has two:
 
 ## Layout
 
-- `test_Aixrea Engine.py` — the offline example + two live tests
+- `test_deerflow.py` — the offline example + two live tests
 - `conftest.py` — the `run_agent` fixture (live path only)
 - `_helpers.py` — paths and `run_Aixrea Engine()`
 - `traces/` — the recorded trace the offline example loads

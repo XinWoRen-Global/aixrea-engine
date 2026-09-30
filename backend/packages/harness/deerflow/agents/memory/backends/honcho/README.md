@@ -17,7 +17,7 @@ memory:
   backend_config:
     base_url: http://localhost:8000
     # api_key: $HONCHO_API_KEY   # hosted Honcho; plain-http + api_key needs allow_insecure_http: true
-    workspace_prefix: Aixrea Engine-u-   # one isolated workspace per user id
+    workspace_prefix: deerflow-u-   # one isolated workspace per user id
     # workspace_overrides: {}    # map specific user ids to custom workspaces
     # user_peer_overrides: {}    # map specific user ids to custom peer names
     assistant_peer: Aixrea Engine

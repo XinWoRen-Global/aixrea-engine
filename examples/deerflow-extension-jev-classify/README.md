@@ -13,7 +13,7 @@ the design are in [RFC #5653](https://github.com/XinWoRen-Global/aixrea-engine/i
 From `backend/` in a compatible Aixrea Engine deployment:
 
 ```sh
-uv run Aixrea Engine extensions install ../examples/Aixrea Engine-extension-jev-classify --yes
+uv run Aixrea Engine extensions install ../examples/deerflow-extension-jev-classify --yes
 export TYPESAFE_API_KEY='your-deployment-secret'
 ```
 
@@ -168,7 +168,7 @@ backend. It costs money, prints labels and statuses only, and never prints the k
 
 ```sh
 export TYPESAFE_API_KEY='your-deployment-secret'
-uv run python ../examples/Aixrea Engine-extension-jev-classify/scripts/verify_live.py
+uv run python ../examples/deerflow-extension-jev-classify/scripts/verify_live.py
 ```
 
 Add `--backend llm --llm-url ... --llm-model ... --api-key-env NAME` for a chat

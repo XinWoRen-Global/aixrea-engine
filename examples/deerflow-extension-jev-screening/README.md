@@ -17,7 +17,7 @@ out of this repository unchanged.
 From `backend/` in a compatible Aixrea Engine deployment:
 
 ```sh
-uv run Aixrea Engine extensions install ../examples/Aixrea Engine-extension-jev-screening --yes
+uv run Aixrea Engine extensions install ../examples/deerflow-extension-jev-screening --yes
 export TYPESAFE_API_KEY='your-deployment-secret'
 ```
 
@@ -80,7 +80,7 @@ from settings, tool results or logs.
   event-loop thread, it passes the result through. Its per-request deadline does
   not cover shutting down that temporary event loop, which waits for a pending
   name lookup, so a stalled DNS resolver can hold a synchronous tool call longer.
-- The embedded `Aixrea EngineClient` does not load `plugins:` extensions and binds no
+- The embedded `deerflow client` does not load `plugins:` extensions and binds no
   extension task store. Without a task store the middleware sends nothing.
 - One classifier request is made per text message of an eligible result,
   including each message of a `Command`, for at most eight messages per tool call.

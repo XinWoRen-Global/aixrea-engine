@@ -10,7 +10,7 @@ Distributed under Aixrea Engine's [MIT license](LICENSE).
 From `backend/` in a compatible Aixrea Engine deployment:
 
 ```sh
-uv run Aixrea Engine extensions install ../examples/Aixrea Engine-extension-jev-context --yes
+uv run Aixrea Engine extensions install ../examples/deerflow-extension-jev-context --yes
 export TYPESAFE_API_KEY='your-deployment-secret'
 ```
 
@@ -136,7 +136,7 @@ OpenAI-compatible chat endpoint, without using real user transcripts:
 ```sh
 export TEST_CHAT_BASE_URL='http://localhost:8000'
 export TEST_CHAT_MODEL='your-test-model'
-uv run python ../examples/Aixrea Engine-extension-jev-context/scripts/verify_live.py
+uv run python ../examples/deerflow-extension-jev-context/scripts/verify_live.py
 ```
 
 This script deliberately sends no chat `Authorization` header. Use a test endpoint
