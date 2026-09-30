@@ -1,6 +1,6 @@
-name: Agent Skill Validation CI
+﻿name: Agent Skill Validation CI
 
-# XinWoRen P3 Skill 标准化：seed/default-agents/*/config.yaml 的 xwr: 声明段校验。
+# Validate agent skill config declarations
 # 规范：devops/docs/skill-standardization-spec-260904.md
 # 校验器：backend/scripts/validate_agent_skill.py（--require-xwr 默认清单内置，
 # 裸跑 --quiet 即强制；负例=幽灵模型/默认不在 supported/creative 缺 channel/未知键）。
