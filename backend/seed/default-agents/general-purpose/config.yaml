@@ -1,3 +1,0 @@
-﻿name: general-purpose
-model: bailian-deepseek-v4-flash
-description: XinWoRen production agent that loads and executes Skills to produce structured content.

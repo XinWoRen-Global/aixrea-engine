@@ -2,11 +2,34 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual env
 .venv/
 venv/
 env/
+
+# Test caches
 .pytest_cache/
 .ruff_cache/
+.hypothesis/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Runtime data
+.deer-flow/
+backend/.deer-flow/
+backend/db/
+backend/config/
+backend/seed/
+*.db
+*.sqlite
+*.sqlite3
 
 # Environment
 .env
@@ -15,16 +38,6 @@ env/
 config.yaml
 extensions_config.json
 
-# IDE
-.vscode/
-.idea/
-*.swp
-
 # OS
 .DS_Store
 Thumbs.db
-
-# Build
-dist/
-build/
-*.egg
