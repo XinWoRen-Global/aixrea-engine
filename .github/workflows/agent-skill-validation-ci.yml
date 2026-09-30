@@ -1,0 +1,55 @@
+name: Agent Skill Validation CI
+
+# XinWoRen P3 Skill 标准化：seed/default-agents/*/config.yaml 的 xwr: 声明段校验。
+# 规范：devops/docs/skill-standardization-spec-260904.md
+# 校验器：backend/scripts/validate_agent_skill.py（--require-xwr 默认清单内置，
+# 裸跑 --quiet 即强制；负例=幽灵模型/默认不在 supported/creative 缺 channel/未知键）。
+
+on:
+  push:
+    branches: ["main", "2.0.x-dev"]
+    paths:
+      - "backend/seed/default-agents/**"
+      - "backend/scripts/validate_agent_skill.py"
+      - "backend/packages/harness/deerflow/config/agents_config.py"
+      - ".github/workflows/agent-skill-validation-ci.yml"
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "backend/seed/default-agents/**"
+      - "backend/scripts/validate_agent_skill.py"
+      - "backend/packages/harness/deerflow/config/agents_config.py"
+      - ".github/workflows/agent-skill-validation-ci.yml"
+
+concurrency:
+  group: agent-skill-validation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate-agent-skills:
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: uv sync --group dev
+
+      - name: Validate agent skills (xwr declarations)
+        working-directory: backend
+        run: uv run python scripts/validate_agent_skill.py --quiet

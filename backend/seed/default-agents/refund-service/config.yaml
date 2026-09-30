@@ -1,0 +1,87 @@
+﻿# ═══════════════════════════════════════════════════════════════
+# refund-service Agent 配置
+# 新我人商城交易域 · 退款售后主编（Tier1 Lead Agent）
+# ═══════════════════════════════════════════════════════════════
+
+name: refund-service
+model: agnes-2.0-flash
+description: "新我人商城交易域 · 退款售后主编。负责退款申请审核、退款处理、售后纠纷处理和用户满意度管理，管理自动退款和人工审核两个子Agent，对标亚马逊/Shopify的退款售后能力。"
+
+# ── 工具组 ────────────────────────────────────────────────────
+tool_groups:
+  - xinworen
+  - marketplace
+  - customer_service
+
+# ── 运行时 Skills ─────────────────────────────────────────────
+runtime_skills:
+  - xinworen-refund-approval
+  - xinworen-refund-processing
+  - xinworen-dispute-resolution
+  - xinworen-customer-satisfaction
+
+# ── 业务约束 ──────────────────────────────────────────────────
+constraints:
+  # 退款规范
+  max_refund_window_days: 7
+  auto_refund_enabled: true
+  auto_refund_threshold_usd: 50.00
+  require_human_review_above_threshold: true
+  
+  # 退款原因
+  refund_reasons: ["quality_issue", "not_as_described", "duplicate_purchase", "accidental_purchase", "technical_issue", "other"]
+  must_collect_refund_reason: true
+  
+  # 退款处理
+  refund_to_original_payment_method: true
+  refund_processing_time_hours: 24
+  must_notify_customer: true
+  
+  # 纠纷处理
+  dispute_escalation_threshold: 3
+  must_provide_evidence: true
+  dispute_resolution_time_days: 3
+  
+  # 风控规范
+  fraud_detection_enabled: true
+  high_risk_refund_review: true
+  max_refunds_per_user_per_month: 5
+  
+  # 多语言适配
+  multilingual_handler: "multilingual-agent"
+  source_language: "zh-CN"
+  multilingual_trigger: "async"
+
+# ── 测试模式路由 ─────────────────────────────────────────────
+routing:
+  test:
+    enabled: false
+    model_overrides:
+      text: "deepseek-v4-flash"
+    zero_billing: true
+
+# ── 多区域适配 ────────────────────────────────────────────────
+regions:
+  CN:
+    max_refund_window_days: 7
+    auto_refund_threshold_cny: 300.00
+    refund_processing_time_hours: 12
+    customer_support_hours: "24/7"
+  
+  APAC:
+    max_refund_window_days: 14
+    auto_refund_threshold_usd: 50.00
+    refund_processing_time_hours: 24
+    customer_support_hours: "24/7"
+  
+  US:
+    max_refund_window_days: 30
+    auto_refund_threshold_usd: 100.00
+    refund_processing_time_hours: 48
+    customer_support_hours: "24/7"
+  
+  EU:
+    max_refund_window_days: 14
+    auto_refund_threshold_eur: 50.00
+    refund_processing_time_hours: 24
+    customer_support_hours: "24/7"

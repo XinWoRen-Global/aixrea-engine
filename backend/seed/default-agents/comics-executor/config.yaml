@@ -1,0 +1,156 @@
+# ═══════════════════════════════════════════════════════════════
+# comics-executor Agent 配置
+# 对标快看/腾讯动漫/咚漫：4 相位线性执行器
+# ═══════════════════════════════════════════════════════════════
+
+name: comics-executor
+model: agnes-2.0-flash
+description: "新我人创作中心 · 漫画线性执行器（4 步线性流）。收到 album_id 后按 analyze→assets→pages→compose 固定顺序调用相位工具，全程不与用户对话，跑完汇报结果。工具直接调用自有管线 API，零外部工具费用。多语言适配由独立 multilingual Agent 处理。"
+
+# ── 工具组 ────────────────────────────────────────────────────
+tool_groups:
+  - comics_executor
+
+# ── 运行时加载的 Skills（SKILL.md 合并为执行器规则源，按域隔离） ─────────
+# 架构规范：每个执行器声明自己的 SKILL.md，执行引擎按名读取归档到运行时真理源。
+# 漫画执行器只启用漫画的 SKILL，绝不加载剧本/音乐/互动等其他域的 SKILL（防串模）。
+runtime_skills:
+  - xinworen-pipeline-execution   # 通用管线执行协议（首轮推荐块 → 等确认 → task 派发、幂等重入）
+  - xinworen-manga-comic          # 漫画作业规范（分镜/分镜文本/角色一致/出图批量）
+
+# ═══════════════════════════════════════════════════════════════
+# 商业化漫画约束（对标快看/腾讯动漫/咚漫头部作品标准）
+# 所有约束在运行时由 agent + tools.py 共同校验
+# ═══════════════════════════════════════════════════════════════
+
+constraints:
+  # ── 内容规范 ──
+  min_pages_per_episode: 8               # 每话最少页数
+  recommended_pages_per_episode: 14      # 建议页数（12-16 页）
+  min_panels_per_page: 3                 # 每页最少分镜格数
+  recommended_panels_per_page: 5         # 建议分镜格数（4-6 格）
+  total_panels_per_episode_min: 30       # 每话最少总格数
+  total_panels_per_episode_max: 80       # 每话最多总格数
+  required_episode_sections:             # 每话必需内容
+    - scene_background
+    - character_dialogue
+    - action_direction
+    - emotion_expression
+  required_story_arc: true               # 每话必须有完整叙事弧线
+  golden_3_panels_hook: true             # 前 3 格黄金钩子
+  peak_density_pages: 5                  # 每 3-5 页一个情绪峰值
+  compliance_red_lines:                  # 合规红线（一票否决）
+    - no_glorifying_crime
+    - no_money_worship
+    - no_vulgar_content
+    - no_underage_romance
+    - positive_values_ending
+  age_rating:                            # 年龄分级
+    min: "12+"
+    auto_label: true
+    allowed_ratings:
+      - "12+"
+      - "16+"
+      - "18+"
+
+  # ── 视觉规范 ──
+  art_style_consistency: true            # 全话统一画风
+  character_consistency_across_pages: true # 角色形象跨页一致
+  camera_angle_diversity:                # 分镜角度多样性
+    min_angle_types: 3                   # 至少 3 种角度（远/中/近/特写）
+    max_consecutive_same_angle: 2        # 最多连续 2 格同角度
+  reading_direction: "ltr"               # 从左到右（Z 字形）
+  dialogue_bubble_max_per_panel: 3       # 每格最多 3 个气泡
+  dialogue_bubble_max_chars: 30          # 每个气泡最多 30 字
+  color_mode: "full_color"               # 全彩
+  main_color_palette_min: 4              # 每页最少 4 色主色调
+  main_color_palette_max: 6              # 每页最多 6 色主色调
+  dialogue_font_size_min: 14             # 对话字体最小 14px
+  dialogue_font_size_max: 16             # 对话字体最大 16px
+  monologue_font_style: "italic"         # 内心独白斜体
+  white_space_ratio_min: 0.15            # 每页留白 ≥ 15%
+
+  # ── 角色规范 ──
+  max_main_characters: 2                 # 主角最多 2 个
+  max_total_characters: 8                # 主要角色最多 8 个
+  recommended_total_characters: 5        # 建议 3-5 个
+  character_distinction_dimensions:      # 角色辨识度四维
+    - hairstyle
+    - costume
+    - color_scheme
+    - body_type
+  min_emotion_variations_per_episode: 3  # 每话至少 3 种表情变化
+
+  # ── 资产规范 ──
+  character_image_per_character: 1       # 每个角色 1 张角色图
+  scene_image_per_scene: 1               # 每个场景 1 张场景图
+  asset_binding: "album_id"              # 资产绑定方式（project_id = album_id）
+  asset_storage_class: "buffer"          # 默认 buffer（30 天 lifecycle）
+
+  # ── Seed 一致性（角色/场景/道具跨页变体） ──
+  seed_enabled: true                     # 启用 Seed 变体能力（画风/角色/场景/道具）
+  seed_skill: "xinworen-character-seed"  # 复用工建 Seed Skill
+  seed_inject: "minimal_high_signal"     # 注入最小高信号子集（每角色 1 前视底图 + 1 表情/服装变体 + 1 场景/道具）
+  seed_first_frame_from_identity: true   # identity 最佳前视底图优先作 pages 首格画风锚
+  seed_similarity_threshold: 0.82        # 底图 vs 成格一致性回检阈值
+  seed_retry_once: true                  # 回检不达标重试 1 次（换参考/强化 prompt）
+  seed_no_identity_fallback: "L1_prompt" # 无 Seed 时走提示词锚定画风（L1）
+
+  # ── 多语言适配 ──
+  multilingual_handler: "multilingual-agent"  # 多语言由独立 Agent 处理
+  source_language: "zh-CN"                    # 源语言
+  multilingual_trigger: "async"               # 合成完成后异步触发
+
+# ═══════════════════════════════════════════════════════════════
+# 多区域适配（Region-Specific Overrides）
+# 全球 6 大区：CN / APAC / US / EU / MENA / LATAM
+# ═══════════════════════════════════════════════════════════════
+
+regions:
+  CN:
+    reading_direction: "ltr"
+    min_pages_per_episode: 8
+    recommended_pages_per_episode: 14
+    art_style_preference: "manhua"           # 条漫风格
+    color_mode: "full_color"
+    best_seller_genres: ["xianxia", "urban_romance", "system_awakening", "ancient_costume"]
+
+  APAC:
+    reading_direction: "ltr"
+    min_pages_per_episode: 8
+    recommended_pages_per_episode: 16
+    art_style_preference: "webtoon"          # 韩式条漫 / 日式漫画
+    color_mode: "full_color"
+    best_seller_genres: ["romance", "fantasy", "action", "isekai"]
+
+  US:
+    reading_direction: "ltr"
+    min_pages_per_episode: 6
+    recommended_pages_per_episode: 12
+    art_style_preference: "western_comics"   # 欧美漫画风格
+    color_mode: "full_color"
+    best_seller_genres: ["superhero", "sci_fi", "horror", "slice_of_life"]
+
+  EU:
+    reading_direction: "ltr"
+    min_pages_per_episode: 6
+    recommended_pages_per_episode: 12
+    art_style_preference: "bande_dessinee"   # 法式漫画风格
+    color_mode: "full_color"
+    best_seller_genres: ["graphic_novel", "historical", "adventure", "sci_fi"]
+
+  MENA:
+    reading_direction: "rtl"                 # 阿拉伯语从右到左
+    min_pages_per_episode: 6
+    recommended_pages_per_episode: 10
+    art_style_preference: "simplified"       # 简化风格（适配本地审美）
+    color_mode: "full_color"
+    best_seller_genres: ["family", "historical", "comedy", "religious_inspired"]
+
+  LATAM:
+    reading_direction: "ltr"
+    min_pages_per_episode: 8
+    recommended_pages_per_episode: 14
+    art_style_preference: "manga_influenced" # 受日漫影响的拉美风格
+    color_mode: "full_color"
+    best_seller_genres: ["romance", "telenovela", "fantasy", "comedy"]

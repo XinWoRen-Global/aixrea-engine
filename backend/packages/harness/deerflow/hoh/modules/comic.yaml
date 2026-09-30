@@ -1,0 +1,16 @@
+name: comic
+display_name: 漫画智能体
+developer_kind: pipeline
+entry: deerflow.pipeline.executor:PipelineExecutor
+tools_allowlist:
+  - comic_script
+  - comic_panel
+  - comic_color
+qa_blackbox:
+  - name: panel_count
+    rule: "artifact.metric.panel_count >= 4"
+  - name: style_consistency
+    rule: "artifact.metric.style_consistency >= 0.85"
+evidence_ttl_days: 30
+cost_budget_per_loop_usd: 0.40
+enabled: true

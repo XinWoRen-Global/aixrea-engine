@@ -1,0 +1,118 @@
+﻿# ═══════════════════════════════════════════════════════════════
+# novel Agent 配置
+# 新我人创作中心 · 小说频道主编（Tier1 Lead Agent）
+# ═══════════════════════════════════════════════════════════════
+
+name: novel
+model: agnes-2.0-flash
+description: "新我人创作中心 · 小说频道主编。负责小说内容的选题策划、大纲生成、章节创作、质量审核和发布管理，对标番茄小说/起点中文网的AI创作能力。管理novel-executor和novel-producer两个子Agent。"
+
+# ── 工具组 ────────────────────────────────────────────────────
+tool_groups:
+  - xinworen
+  - content_creation
+  - quality_control
+
+# ── 运行时 Skills ─────────────────────────────────────────────
+runtime_skills:
+  - xinworen-content-planning
+  - xinworen-novel-writing
+  - xinworen-quality-inspector
+
+# ── 业务约束 ──────────────────────────────────────────────────
+constraints:
+  # 创作规范
+  max_chapters_per_novel: 100
+  recommended_chapters: 30
+  max_words_per_chapter: 3000
+  recommended_words_per_chapter: 2000
+  chapter_quality_threshold: 4.0
+  
+  # 内容规范
+  must_follow_content_policy: true
+  no_plagiarism: true
+  must_original_content: true
+  
+  # 多语言适配
+  multilingual_handler: "multilingual-agent"
+  source_language: "zh-CN"
+  multilingual_trigger: "async"
+  
+  # 发布规范
+  auto_publish: false
+  require_human_review: true
+  scheduled_publish: true
+
+# ── 测试模式路由 ─────────────────────────────────────────────
+routing:
+  test:
+    enabled: false
+    model_overrides:
+      text: "deepseek-v4-flash"
+    zero_billing: true
+
+# ── 多区域适配 ────────────────────────────────────────────────
+regions:
+  CN:
+    preferred_genres: ["都市", "玄幻", "言情", "悬疑", "历史"]
+    chapter_length: "2000-3000字"
+    update_frequency: "每日1-2更"
+    monetization: "付费章节+广告"
+    platform: "番茄小说/起点中文网"
+  
+  APAC:
+    preferred_genres: ["romance", "fantasy", "horror", "comedy"]
+    chapter_length: "1500-2500字"
+    update_frequency: "每日1更"
+    monetization: "付费章节+订阅"
+    platform: "Webnovel/Kakao"
+  
+  US:
+    preferred_genres: ["sci_fi", "fantasy", "romance", "thriller", "mystery"]
+    chapter_length: "2000-4000字"
+    update_frequency: "每周3-5更"
+    monetization: "Kindle Unlimited+付费"
+    platform: "Amazon Kindle/Royal Road"
+  
+  EU:
+    preferred_genres: ["fantasy", "crime", "historical", "sci_fi"]
+    chapter_length: "2500-4500字"
+    update_frequency: "每周2-3更"
+    monetization: "付费+订阅"
+    platform: "Amazon Kobo"
+
+# ── 分级标准 ──────────────────────────────────────────────────
+rating:
+  tiers:
+    S:
+      label: "头部爆款"
+      criteria: "IP改编潜力，S级作者，全平台分发"
+    A:
+      label: "优质作品"
+      criteria: "高概念题材，强付费点"
+    B:
+      label: "腰部作品"
+      criteria: "标准题材，单平台分发"
+    C:
+      label: "测试作品"
+      criteria: "AI全流程生成，测试新题材"
+  dimensions:
+    story_rhythm: 30
+    character_appeal: 25
+    world_building: 20
+    producibility: 15
+    compliance: 10
+
+# ── XinWoRen Skill 标准化元数据（P3 横向复制，2026-09-04）──────────────
+# 规范：devops/docs/skill-standardization-spec-260904.md（参考模板 = interactive）
+xwr:
+  schema_version: 1
+  domain: creative
+  tier: lead
+  channel: novel
+  # 纯文本创作：无 video/image/audio 生成能力声明
+  startup_questions:
+    - "题材与世界观（都市/玄幻/悬疑/科幻等）？"
+    - "章节数（建议 30，上限 100）与每章字数（建议 2000，上限 3000）？"
+    - "叙事视角与人称（第一/第三人称）？"
+    - "首发语言与多语言范围（多语言由 multilingual Agent 异步处理）？"

@@ -1,0 +1,24 @@
+# gateway_routing.yaml.example
+#
+# 模型路由外置示例（MODEL_ROUTING_CN / GLOBAL / TEST 三张表）。
+# 启用方式（二选一）：
+#   1. 复制为 backend/config/gateway_routing.yaml（无文件时走 ai_proxy.py 内置默认）；
+#   2. 设环境变量 GATEWAY_ROUTING_FILE 指向任意 yaml 路径（相对路径基于 backend/config/ 解析）。
+#
+# 语义：列出某模型即整体替换它的 failover 链（路由链有序，不做部分合并）。
+# hop 形式为 [provider_id, 厂商原始模型名]；provider_id 必须存在于 PROVIDERS_CONFIG。
+# 未列出的模型沿用内置默认链。
+routing_cn:
+  llama-3.1-8b:
+    - ["siliconflow", "Qwen/Qwen2.5-7B-Instruct"]
+    - ["nvidia", "meta/llama-3.1-8b-instruct"]
+    - ["openrouter", "meta-llama/llama-3.1-8b-instruct:free"]
+routing_global:
+  llama-3.1-8b:
+    - ["groq", "llama-3.1-8b-instant"]
+    - ["nvidia", "meta/llama-3.1-8b-instruct"]
+    - ["openrouter", "meta-llama/llama-3.1-8b-instruct:free"]
+routing_test:
+  # TEST_MODE=1 时多模态钉死免费 Agnes，防止回归测试误扣费；改动前想清楚成本。
+  image-generator:
+    - ["agnes", "agnes-image-2.1-flash"]

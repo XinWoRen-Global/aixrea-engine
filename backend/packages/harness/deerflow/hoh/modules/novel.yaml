@@ -1,0 +1,16 @@
+name: novel
+display_name: 小说智能体
+developer_kind: pipeline
+entry: deerflow.pipeline.executor:PipelineExecutor
+tools_allowlist:
+  - novel_outline
+  - novel_chapter
+  - novel_polish
+qa_blackbox:
+  - name: word_count
+    rule: "artifact.metric.word_count >= 800"
+  - name: coherence
+    rule: "artifact.metric.coherence >= 0.8"
+evidence_ttl_days: 30
+cost_budget_per_loop_usd: 0.20
+enabled: true

@@ -1,0 +1,41 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.coverage
+.coverage.*
+.ruff_cache
+agent_history.gif
+static/browser_history/*.gif
+
+log/
+log/*
+
+# Virtual environments
+.venv
+venv/
+
+# User config file
+config.yaml
+# Agent personality configs under seed/ are safe source (no secrets) — keep tracked.
+# Without this exception, every NEW seed agent's config.yaml is silently ignored and
+# never reaches the image, so its assistant fails to register (404). See drama-executor.
+!seed/default-agents/**/config.yaml
+
+# Langgraph
+.langgraph_api
+
+# Sandbox runtime working dir — pre-created and excluded from uvicorn reload
+# (scripts/serve.sh, docker/dev-entrypoint.sh). Anchored so it does not match
+# the source package backend/packages/harness/deerflow/sandbox/.
+/sandbox/
+
+# Claude Code settings
+.claude/settings.local.json
+
+# pytest --basetemp workaround dirs (sandbox tmp_path permission)
+.pytest_tmp/
+.pytest_tmp_run/

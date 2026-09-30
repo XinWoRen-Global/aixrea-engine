@@ -1,0 +1,18 @@
+line-length = 240
+target-version = "py312"
+
+[lint]
+select = ["E", "F", "I", "UP"]
+ignore = []
+
+[lint.per-file-ignores]
+# 运维脚本（scripts/）为一次性工具，豁免单行多语句格式约束；
+# 生产 backend 包仍保持严格 E/F/I/UP。
+"scripts/**" = ["E701", "E702"]
+
+[lint.isort]
+known-first-party = ["deerflow", "app"]
+
+[format]
+quote-style = "double"
+indent-style = "space"

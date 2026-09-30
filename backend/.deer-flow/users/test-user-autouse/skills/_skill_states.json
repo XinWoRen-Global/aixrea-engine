@@ -1,0 +1,14 @@
+{
+  "code-gen": {
+    "enabled": false
+  },
+  "my-analyzer": {
+    "enabled": false
+  },
+  "ghost-skill": {
+    "enabled": false
+  },
+  "s1": {
+    "enabled": false
+  }
+}

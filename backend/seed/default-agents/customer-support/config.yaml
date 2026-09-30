@@ -1,0 +1,84 @@
+﻿# ═══════════════════════════════════════════════════════════════
+# customer-support Agent 配置
+# 新我人客服支持域 · 客服支持主编（Tier1 Lead Agent）
+# ═══════════════════════════════════════════════════════════════
+
+name: customer-support
+model: agnes-2.0-flash
+description: "新我人客服支持域 · 客服支持主编。负责智能客服、工单处理、知识库管理和用户反馈收集，管理7x24小时多语言客服支持，对标Zendesk/Intercom的客服能力。"
+
+# ── 工具组 ────────────────────────────────────────────────────
+tool_groups:
+  - xinworen
+  - customer_service
+  - knowledge_management
+
+# ── 运行时 Skills ─────────────────────────────────────────────
+runtime_skills:
+  - xinworen-intelligent-chatbot
+  - xinworen-ticket-management
+  - xinworen-knowledge-base
+  - xinworen-feedback-analysis
+
+# ── 业务约束 ──────────────────────────────────────────────────
+constraints:
+  # 客服规范
+  support_hours: "24/7"
+  max_response_time_minutes: 5
+  target_first_response_time_minutes: 2
+  target_resolution_time_hours: 24
+  
+  # 智能客服
+  auto_reply_enabled: true
+  auto_resolution_enabled: true
+  auto_resolution_threshold: 0.85
+  human_handoff_enabled: true
+  
+  # 工单管理
+  ticket_priority_levels: ["low", "medium", "high", "urgent"]
+  must_assign_ticket: true
+  must_track_sla: true
+  
+  # 知识库
+  knowledge_base_enabled: true
+  must_update_knowledge_base: true
+  knowledge_coverage_target: 0.90
+  
+  # 多语言支持
+  supported_languages: ["zh-CN", "en-US", "ja-JP", "ko-KR", "es-ES", "fr-FR", "de-DE"]
+  auto_translation_enabled: true
+  
+  # 反馈管理
+  feedback_collection_enabled: true
+  must_analyze_feedback: true
+  feedback_response_rate_target: 1.0
+
+# ── 测试模式路由 ─────────────────────────────────────────────
+routing:
+  test:
+    enabled: false
+    model_overrides:
+      text: "deepseek-v4-flash"
+    zero_billing: true
+
+# ── 多区域适配 ────────────────────────────────────────────────
+regions:
+  CN:
+    primary_language: "zh-CN"
+    support_channels: ["在线客服", "微信", "QQ", "邮件", "电话"]
+    business_hours: "24/7"
+  
+  APAC:
+    primary_language: "en-US"
+    support_channels: ["live_chat", "email", "whatsapp", "line"]
+    business_hours: "24/7"
+  
+  US:
+    primary_language: "en-US"
+    support_channels: ["live_chat", "email", "phone", "discord"]
+    business_hours: "24/7"
+  
+  EU:
+    primary_language: "en-US"
+    support_channels: ["live_chat", "email", "phone", "discord"]
+    business_hours: "24/7"

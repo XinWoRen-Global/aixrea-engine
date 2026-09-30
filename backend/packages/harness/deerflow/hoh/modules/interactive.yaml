@@ -1,0 +1,18 @@
+name: interactive
+display_name: 互动影游
+developer_kind: pipeline
+entry: deerflow.pipeline.executor:PipelineExecutor
+tools_allowlist:
+  - interactive_script
+  - interactive_branch
+  - interactive_render
+qa_blackbox:
+  - name: branch_count
+    rule: "artifact.metric.branch_count >= 3"
+  - name: ending_count
+    rule: "artifact.metric.ending_count >= 2"
+  - name: playable
+    rule: "artifact.metric.playable == true"
+evidence_ttl_days: 30
+cost_budget_per_loop_usd: 0.60
+enabled: true

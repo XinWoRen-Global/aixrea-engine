@@ -1,0 +1,16 @@
+name: music
+display_name: 音乐智能体
+developer_kind: pipeline
+entry: deerflow.pipeline.executor:PipelineExecutor
+tools_allowlist:
+  - music_lyrics
+  - music_generate
+  - music_master
+qa_blackbox:
+  - name: duration_check
+    rule: "15 <= artifact.metric.duration <= 300"
+  - name: copyright_scan
+    rule: "artifact.metric.copyright_score >= 0.9"
+evidence_ttl_days: 30
+cost_budget_per_loop_usd: 0.30
+enabled: true

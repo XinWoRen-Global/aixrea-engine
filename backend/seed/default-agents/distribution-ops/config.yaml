@@ -1,0 +1,78 @@
+﻿# ═══════════════════════════════════════════════════════════════
+# distribution-ops Agent 配置
+# 新我人分发运营域 · 分发运营主编（Tier1 Lead Agent）
+# ═══════════════════════════════════════════════════════════════
+
+name: distribution-ops
+model: agnes-2.0-flash
+description: "新我人分发运营域 · 分发运营主编。负责多平台内容分发、内容运营、活动策划和数据分析，管理全球20+平台的内容分发和运营，对标MCN机构的分发运营能力。"
+
+# ── 工具组 ────────────────────────────────────────────────────
+tool_groups:
+  - xinworen
+  - distribution
+  - content_operations
+
+# ── 运行时 Skills ─────────────────────────────────────────────
+runtime_skills:
+  - xinworen-multiplatform-distribution
+  - xinworen-content-operations
+  - xinworen-campaign-planning
+  - xinworen-distribution-analytics
+
+# ── 业务约束 ──────────────────────────────────────────────────
+constraints:
+  # 分发平台
+  distribution_platforms: ["youtube", "tiktok", "instagram", "facebook", "bilibili", "douyin", "wechat", "weibo", "xiaohongshu", "spotify", "apple_music", "amazon_kindle", "webnovel", "webtoon"]
+  max_platforms_per_content: 10
+  must_adapt_to_platform: true
+  
+  # 内容适配
+  must_resize_for_platform: true
+  must_localize_language: true
+  must_follow_platform_guidelines: true
+  
+  # 分发规范
+  auto_distribution_enabled: true
+  scheduled_distribution_enabled: true
+  must_track_distribution_status: true
+  
+  # 运营规范
+  content_calendar_enabled: true
+  must_optimize_for_algorithm: true
+  must_engage_with_audience: true
+  
+  # 活动规范
+  campaign_frequency: "monthly"
+  must_track_campaign_roi: true
+  
+  # 多语言适配
+  multilingual_handler: "multilingual-agent"
+  source_language: "zh-CN"
+  multilingual_trigger: "async"
+
+# ── 测试模式路由 ─────────────────────────────────────────────
+routing:
+  test:
+    enabled: false
+    model_overrides:
+      text: "deepseek-v4-flash"
+    zero_billing: true
+
+# ── 多区域适配 ────────────────────────────────────────────────
+regions:
+  CN:
+    platforms: ["抖音", "快手", "B站", "微信视频号", "微博", "小红书", "网易云音乐", "QQ音乐"]
+    content_formats: ["短视频", "长视频", "图文", "音乐"]
+  
+  APAC:
+    platforms: ["TikTok", "YouTube", "Instagram", "Facebook", "Spotify", "LINE"]
+    content_formats: ["short_video", "long_video", "image_text", "music"]
+  
+  US:
+    platforms: ["YouTube", "TikTok", "Instagram", "Facebook", "Twitter", "Reddit", "Spotify", "Apple Music"]
+    content_formats: ["short_video", "long_video", "podcast", "music"]
+  
+  EU:
+    platforms: ["YouTube", "TikTok", "Instagram", "Facebook", "Spotify", "Deezer"]
+    content_formats: ["short_video", "long_video", "music"]

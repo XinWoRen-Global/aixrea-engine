@@ -1,0 +1,26 @@
+name: Auto Cleanup Branches
+
+on:
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Delete merged branch
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          if [ -n "$BRANCH" ] && [ "$BRANCH" != "main" ] && [ "$BRANCH" != "master" ]; then
+            git push origin --delete "$BRANCH" || true
+            echo "Deleted branch: $BRANCH"
+          fi

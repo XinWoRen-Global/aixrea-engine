@@ -1,0 +1,131 @@
+﻿# ═══════════════════════════════════════════════════════════════
+# interactive Agent 配置
+# 新我人创作中心 · 互动内容频道主编（Tier1 Lead Agent）
+# ═══════════════════════════════════════════════════════════════
+
+name: interactive
+model: agnes-2.0-flash
+description: "新我人创作中心 · 互动内容频道主编。负责互动小说、互动剧、游戏化内容的策划、分支设计、剧情生成和交互逻辑设计，对标Telltale/Quantic Dream的互动叙事能力。管理interactive-executor和interactive-producer两个子Agent。"
+
+# ── 工具组 ────────────────────────────────────────────────────
+tool_groups:
+  - xinworen
+  - content_creation
+  - interactive_design
+
+# ── 运行时 Skills ─────────────────────────────────────────────
+runtime_skills:
+  - xinworen-interactive-planning
+  - xinworen-branch-design
+  - xinworen-quality-inspector
+
+# ── 业务约束 ──────────────────────────────────────────────────
+constraints:
+  # 互动内容规范
+  max_branches_per_story: 20
+  recommended_branches: 8
+  max_endings: 10
+  recommended_endings: 5
+  min_playtime_minutes: 30
+  recommended_playtime_minutes: 60
+  
+  # 分支设计规范
+  must_have_meaningful_choices: true
+  no_dead_ends: true
+  choices_must_affect_story: true
+  
+  # 内容规范
+  must_follow_content_policy: true
+  must_original_content: true
+  
+  # 多语言适配
+  multilingual_handler: "multilingual-agent"
+  source_language: "zh-CN"
+  multilingual_trigger: "async"
+  
+  # 发布规范
+  auto_publish: false
+  require_human_review: true
+
+# ── 测试模式路由 ─────────────────────────────────────────────
+routing:
+  test:
+    enabled: false
+    model_overrides:
+      text: "deepseek-v4-flash"
+    zero_billing: true
+
+# ── 多区域适配 ────────────────────────────────────────────────
+regions:
+  CN:
+    preferred_formats: ["互动小说", "互动剧", "文字冒险"]
+    preferred_genres: ["悬疑", "言情", "玄幻", "都市"]
+    monetization: "付费章节+广告+内购"
+    platform: "腾讯互动/网易易次元"
+  
+  APAC:
+    preferred_formats: ["visual_novel", "interactive_drama"]
+    preferred_genres: ["romance", "horror", "mystery"]
+    monetization: "付费+内购"
+    platform: "Choices/Episodes"
+  
+  US:
+    preferred_formats: ["interactive_fiction", "choice-based_game"]
+    preferred_genres: ["sci_fi", "fantasy", "thriller", "romance"]
+    monetization: "premium+DLC"
+    platform: "Telltale/Quantic Dream/Steam"
+  
+  EU:
+    preferred_formats: ["interactive_fiction", "narrative_game"]
+    preferred_genres: ["crime", "historical", "sci_fi", "fantasy"]
+    monetization: "premium+subscription"
+    platform: "Steam/GOG"
+
+# ── 分级标准 ──────────────────────────────────────────────────
+rating:
+  tiers:
+    S:
+      label: "头部爆款"
+      criteria: "IP改编潜力，S级编剧，多平台发行"
+    A:
+      label: "优质作品"
+      criteria: "高概念题材，强分支设计"
+    B:
+      label: "腰部作品"
+      criteria: "标准题材，单平台发行"
+    C:
+      label: "测试作品"
+      criteria: "AI全流程生成，测试新题材"
+  dimensions:
+    story_branching: 30
+    character_depth: 25
+    replay_value: 20
+    producibility: 15
+    compliance: 10
+
+# ── XinWoRen Skill 标准化元数据（P3 参考实现，2026-09-04）──────────────
+# 规范：devops/docs/skill-standardization-spec-260904.md
+# 本段为全部 68 个智能体的参考模板；其余智能体按需渐进补齐（opt-in），
+# 校验脚本 backend/scripts/validate_agent_skill.py 以「有 xwr 即校验」为原则。
+xwr:
+  schema_version: 1
+  domain: creative
+  tier: lead
+  channel: interactive
+  capabilities:
+    video: true
+    image: true
+  models:
+    video:
+      # 口径 = 前端表单 value / DeerFlow 路由 id（SSOT：minimax-spec.ts + video_providers.py）
+      supported: [MiniMax-H3-Max, MiniMax-H3, seedance-2-mini]
+      # 已拍板（2026-09-04）：互动影游默认 H3 Max；一致性评分 <7 时降级 seedance-2-mini
+      default: MiniMax-H3-Max
+  # 启动前询问（A 案 §5）：与 constraints 数值约束呼应
+  startup_questions:
+    - "题材/世界观（现实主义、奇幻、悬疑等）？"
+    - "分支复杂度：需要几条剧情分支？（建议 8，上限 20，见 constraints）"
+    - "每分支片段数与单片段时长？（H3 Max 支持 5-15 秒）"
+    - "角色数量，以及是否复用资产中心已有角色？"
+  budget_guards:
+    - INTERACTIVE_VIDEO_MATRIX_CAP   # 分支矩阵单专辑片段硬上限（默认 24）

@@ -1,0 +1,21 @@
+# gateway_providers.yaml.example
+#
+# 厂商配置外置示例（深合并：只写要覆盖的键，其余沿用 ai_proxy.py 内置默认值）。
+# 启用方式（二选一）：
+#   1. 复制为 backend/config/gateway_providers.yaml（无文件时走内置默认）；
+#   2. 设环境变量 GATEWAY_PROVIDERS_FILE 指向任意 yaml 路径（相对路径基于 backend/config/ 解析）。
+#
+# 可覆盖任意厂商的任意字段；新增厂商直接添加一个新键即可被池层泛化注册。
+# 注意：密钥本身不走 yaml —— 各厂商仍从 env_var 指定的环境变量读取 API Key。
+nvidia:
+  regions: ["global", "cn"]
+siliconflow:
+  models:
+    - "Qwen/Qwen2.5-7B-Instruct"
+    - "Qwen/Qwen2.5-72B-Instruct"
+    - "deepseek-ai/DeepSeek-V2-Chat"
+    - "Qwen/Qwen3.5-Flash-Instruct"
+openrouter:
+  extra_headers:
+    HTTP-Referer: "https://xinworen.com"
+    X-Title: "XinWoRen AI"

@@ -1,0 +1,94 @@
+﻿# ═══════════════════════════════════════════════════════════════
+# comic-producer Agent 配置
+# 新我人创作中心 · 漫画生产执行画师（Tier2 Subagent，被Lead派发）
+# ═══════════════════════════════════════════════════════════════
+
+name: comic-producer
+model: agnes-2.0-flash
+description: "新我人创作中心 · 漫画生产执行画师。负责把漫画分镜脚本转化为具体的角色设计、场景设计和画面生成提示词，驱动图像生成模型完成漫画画面创作，并管理角色一致性检查和持久化存储。被comics主编派发，纯执行不与用户对话。"
+
+# ── 工具组 ────────────────────────────────────────────────────
+tool_groups:
+  - xinworen
+  - comic_executor
+
+# ── 运行时 Skills ─────────────────────────────────────────────
+runtime_skills:
+  - xinworen-panel-generation
+  - xinworen-character-consistency
+  - xinworen-scene-consistency
+  - xinworen-quality-inspector
+
+# ── 业务约束 ──────────────────────────────────────────────────
+constraints:
+  # 生产者职责约束
+  must_follow_lead_direction: true
+  no_user_interaction: true
+  must_report_to_lead: true
+  
+  # 漫画生成约束
+  max_chapters_per_project: 100
+  max_panels_per_chapter: 20
+  recommended_panels_per_chapter: 12
+  max_characters: 8
+  recommended_characters: 5
+  panel_quality_threshold: 4.0
+  character_consistency_threshold: 4.5
+  scene_consistency_threshold: 4.0
+  
+  # 画面规范
+  image_resolution: "1024x1536"
+  image_style: "manga"
+  must_use_character_reference: true
+  must_use_scene_reference: true
+  must_maintain_style_consistency: true
+  
+  # 内容规范
+  must_follow_content_policy: true
+  must_original_content: true
+  no_copyright_infringement: true
+  
+  # 持久化规范
+  asset_storage_class: "permanent"
+  asset_bucket_prefix: "comics/"
+  asset_format: "png"
+  asset_binding: "album_id"
+  
+  # 多语言适配
+  multilingual_handler: "multilingual-agent"
+  source_language: "zh-CN"
+  multilingual_trigger: "async"
+
+# ── 测试模式路由 ─────────────────────────────────────────────
+routing:
+  test:
+    enabled: false
+    model_overrides:
+      image: "agnes-image-2.1-flash"
+    zero_billing: true
+
+# ── 多区域适配 ────────────────────────────────────────────────
+regions:
+  CN:
+    preferred_styles: ["国漫", "日漫", "韩漫"]
+    panel_count_per_chapter: "12-20"
+    update_frequency: "每周1-2更"
+    monetization: "付费章节+广告+周边"
+  
+  APAC:
+    preferred_styles: ["manga", "manhwa", "manhua"]
+    panel_count_per_chapter: "10-16"
+    update_frequency: "每周1更"
+    monetization: "付费+订阅"
+  
+  US:
+    preferred_styles: ["american_comic", "manga", "graphic_novel"]
+    panel_count_per_chapter: "20-30"
+    update_frequency: "每月1-2更"
+    monetization: "单刊+合订本+数字订阅"
+  
+  EU:
+    preferred_styles: ["bande_dessinee", "graphic_novel", "manga"]
+    panel_count_per_chapter: "30-50"
+    update_frequency: "每月1更"
+    monetization: "精装+平装+数字"

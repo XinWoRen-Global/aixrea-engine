@@ -1,0 +1,22 @@
+name: drama
+display_name: 短剧智能体
+developer_kind: pipeline
+entry: deerflow.pipeline.executor:PipelineExecutor
+tools_allowlist:
+  - drama_script
+  - drama_storyboard
+  - drama_render
+  - drama_composite
+qa_blackbox:
+  - name: duration_check
+    rule: "60 <= artifact.duration <= 180"
+  - name: subtitle_sync
+    rule: "artifact.metric.subtitle_sync >= 0.9"
+  - name: copyright_scan
+    rule: "artifact.metric.copyright_score >= 0.9"
+qa_whitebox:
+  - name: render_pipeline_schema
+    rule: "json_schema_valid(artifact.render_log, 'v1')"
+evidence_ttl_days: 30
+cost_budget_per_loop_usd: 0.50
+enabled: true

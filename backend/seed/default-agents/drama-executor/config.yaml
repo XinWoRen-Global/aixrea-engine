@@ -1,0 +1,267 @@
+# ═══════════════════════════════════════════════════════════════
+# drama-executor Agent 配置
+# 对标小云雀短剧智能体：4 相位线性执行器
+# ═══════════════════════════════════════════════════════════════
+
+name: drama-executor
+model: agnes-2.0-flash
+description: "新我人创作中心 · 短剧线性执行器（自研，对标 Seedance 4 步线性流）。收到 album_id 后按 analyze→assets→video→compose 固定顺序调用相位工具，全程不与用户对话，跑完汇报结果。多语言适配由独立 multilingual Agent 处理。工具直接调用自有管线 API，零外部工具费用。"
+
+# ── 工具组 ────────────────────────────────────────────────────
+tool_groups:
+  - drama_executor
+
+# ── 运行时加载的 Skills（SKILL.md 合并为执行器规则源） ───────────────
+# 架构规范：config.yaml 声明「要读入运行时的 SKILL.md 名称」，
+# 执行引擎（pipeline_executor）启动/热加载时按名读取 skills/public/<name>/SKILL.md，
+# 与 SOUL.md + config.yaml 合并为 agent 运行时真理源（100% 一致）。
+runtime_skills:
+  - xinworen-pipeline-execution   # 管线执行能力说明书（首轮推荐块 → 等确认 → task 派发）
+  - xinworen-character-seed       # 角色种子一致性（人物外观/身份跨节点保持一致）
+
+# ═══════════════════════════════════════════════════════════════
+# 商业化短剧约束（对标小云雀短剧智能体 + 红果/河马/麦芽标准）
+# 所有约束在运行时由 agent + tools.py 共同校验
+# ═══════════════════════════════════════════════════════════════
+
+constraints:
+  # ── 剧本规范 ──
+  min_script_words_per_episode: 500       # 每集最少字数
+  recommended_script_words_per_episode: 700  # 建议字数
+  required_script_sections:               # 每集必需内容
+    - scene_description
+    - character_dialogue
+    - action_direction
+    - emotion_annotation
+  required_story_arc: true                # 每集必须有起承转合
+  golden_3_second_hook: true              # 黄金 3 秒法则
+  hook_density_seconds: 15                # 每 15 秒一个钩子/情绪峰值
+  compliance_red_lines:                   # 合规红线（一票否决）
+    - no_glorifying_crime
+    - no_money_worship
+    - no_vulgar_content
+    - no_underage_romance
+    - positive_values_ending
+
+  # ── 分集结构 ──
+  min_segments_per_episode: 4             # 每集最少分镜段数
+  max_segments_per_episode: 6             # 每集最多分镜段数
+  segment_duration_seconds: 15            # 每个分镜段时长（秒）
+  min_episode_duration_seconds: 60        # 每集最少总时长（秒）
+  max_episode_duration_seconds: 90        # 每集最多总时长（秒）
+  required_segment_fields:                # 每段必需字段
+    - scene_name
+    - character_list
+    - action_description
+    - camera_angle
+    - atmosphere
+  episode_end_cliffhanger: true           # 每集结尾必留悬念
+
+  # ── 分镜爆款节奏（主编方法论，注入 generate_storyboard prompt） ──
+  # 架构规范：业务规则定义在 Agent 的 config.yaml / SOUL.md，
+  # 执行引擎（pipeline_executor）运行时读取此段作为唯一真理源，
+  # 严禁在 gateway 执行代码中硬编码同一段约束。
+  # 本字段内容直接注入分镜生成 LLM prompt 的"硬性要求"段。
+  storyboard_viral_rhythm_prompt: |
+    7) 爆款节奏（主编方法论，硬性）：这一整集必须按「短剧爆款」的节奏设计镜头——
+       - 开场 3 秒钩子：第 1~2 个镜头就要抛出强冲突/反常事件（耳光、反转对话、危险逼近、身份暴露），把观众瞬间抓住，禁止平淡的开场氛围镜头；
+       - 每 10~15 秒一个小反转：镜头推进中至少安排 2~3 次情绪/情节上的小反转（如对方态度突变、秘密泄露、反杀转折），让观众持续『想看下去』；
+       - 情绪曲线：镜头序列要有清晰的起承转合（张力拉起→危机顶点→短暂缓释→新的悬念），避免全程平铺直叙；
+       - 结尾悬念：最后一镜必须留下强钩子（反杀第一步、秘密曝光、惊天反转的预告），引导观众点开下一集；
+       结合题材锚点，把这些爆款手法落到具体的镜头描写与对白中，而不是在 JSON 里空谈节奏。
+  # 分镜 JSON 格式契约（执行引擎硬编码部分，此处仅作文档镜像）
+  # 执行引擎格式契约：题材忠诚、角色一致、场景一致、对白逐字摘录、零 XML 标签、按时间顺序。
+  # 以上 6 条属于 pipeline_executor._parse_structured_text 依赖的 JSON_SCHEMA_CONTRACT，
+  # 修改会连带影响解析逻辑，故保留在执行引擎中；本 Agent 仅重写其业务层的爆款方法论（第 7 条）。
+
+  # ── 资产规范 ──
+  max_characters: 8                       # 最多角色数
+  recommended_characters: 5               # 建议角色数（3-5 个主要角色）
+  max_scenes: 10                          # 最多场景数
+  preferred_scene_type: "indoor"          # 优先室内/固定场景
+  character_image_per_character: 1        # 每个角色 1 张角色图
+  scene_image_per_scene: 1                # 每个场景 1 张场景图
+  asset_binding: "album_id"               # 资产绑定方式（project_id = album_id）
+  asset_storage_class: "buffer"           # 默认 buffer（30 天 lifecycle）
+  asset_bucket_prefix: "d/"               # 临时桶前缀
+
+  # ── 视频规范 ──
+  max_retry_attempts: 1                   # 每个节点最多重试次数
+  default_resolution: "720p"              # 默认分辨率
+  default_aspect_ratio: "9:16"            # 默认画幅比（竖屏短剧）
+  segment_reference_required: true        # 分镜段必须引用角色/场景图作为首帧
+
+  # ── 合成规范 ──
+  add_subtitles: true                     # 是否添加字幕
+  add_background_music: true              # 是否添加背景音乐
+  output_format: "mp4"                    # 输出格式
+  compose_sort_order:                     # 拼接排序
+    - episodeIndex
+    - segmentIndex
+
+  # ── 多语言适配 ──
+  multilingual_handler: "multilingual-agent"  # 多语言由独立 Agent 处理
+  source_language: "zh-CN"                    # 源语言
+  multilingual_trigger: "async"               # 合成完成后异步触发
+
+  # ── 剧本/分镜确认门（批次边界确认） ──
+  # 架构规范：确认门策略定义在 Agent 的 config.yaml，执行引擎运行时读取此段作为唯一真理源。
+  # 语义 =「批次边界确认」而非「每个节点确认」：只在列出的边界节点完成后暂停一次，
+  # 让整段（如 analyze 文本阶段 → assets 图/视频阶段）作为一个批次推进，避免在成本最低
+  # 的首节点就打断用户。前端据此渲染「扣费预估卡片」+「确认并继续」。
+  confirmation_gates:
+    enabled: true                            # 全局开关（false 则全程自动，不设确认门）
+    boundary_nodes:                          # 批次边界节点：仅这些节点完成后进入 awaiting_confirm
+      - generate_storyboard                  # 分镜定稿 = analyze 文本批次边界（进入资产生成前）
+    confirm_action_label: "确认并继续"        # 前端确认按钮文案（B 端化）
+    cost_preview_included: true              # 确认卡片是否展示下一批次预估扣费
+
+# ── 测试模式路由 / 扣费（TEST_MODE） ─────────────────────────────────────
+# 与 env TEST_MODE=1 二选一（env 优先级更高；线上 env 永不开启）。
+# 生效范围 = 运行该后端进程所在环境：本地 .env 或线上容器 env。
+# 测试模式：多模态模型钉死 Agnes 免费模型（ai_proxy 路由层）+ 完全零扣费（跳过 ledger hold）。
+routing:
+  test:
+    enabled: false                            # false=生产（默认）；true=该进程进入测试模式
+    model_overrides:
+      video: "agnes-video-v2.0"             # 免费测试视频模型（仅测试模式使用）
+      image: "agnes-image-2.1-flash"        # 免费测试图片模型
+    zero_billing: true                      # 零扣费（跳过 ledger hold/commit/release）
+
+# ═══════════════════════════════════════════════════════════════
+# 多区域适配（Region-Specific Overrides）
+# 继承前端 region_configs 表结构，按 region_code 覆盖默认约束
+# 未列出的区域使用根约束（zh-CN 标准）
+# 全球 6 大区：CN / APAC / US / EU / MENA / LATAM
+# 子区域（如 HK、TW、SG、UK、DE、BR 等）在 region_configs 数据库表继承合并
+# ═══════════════════════════════════════════════════════════════
+
+regions:
+  # ── 大中华区 ──
+  CN:
+    episode_duration_seconds: 60            # 中文短剧每集 60 秒
+    episode_duration_max: 90                # 中文短剧每集最多 90 秒
+    narrative_pacing: "fast"                # 快节奏短剧
+    golden_3_second_hook: true              # 黄金 3 秒法则
+    hook_density_seconds: 15                # 每 15 秒一个钩子
+    reading_direction: "ltr"                # 从左到右
+    default_aspect_ratio: "9:16"            # 竖屏
+    preferred_formats: ["vertical_short_video"]
+    best_seller_genres: ["urban_romance", "ancient_costume", "rebirth", "president_ceo", "sweet_romance"]
+    pricing_tier: "tier_1"                  # 标准定价
+
+  # ── 亚太区 ──
+  APAC:
+    episode_duration_seconds: 50            # 亚太短剧每集 50 秒
+    episode_duration_max: 70
+    narrative_pacing: "moderate"
+    golden_3_second_hook: true
+    hook_density_seconds: 18
+    reading_direction: "ltr"
+    default_aspect_ratio: "9:16"
+    preferred_formats: ["vertical_short_video", "horizontal_short_video"]
+    best_seller_genres: ["romance", "fantasy", "horror", "comedy"]
+    cultural_sensitive_topics: ["religion", "royalty", "historical_figures"]
+    pricing_tier: "tier_2"                  # 中低定价（购买力平价）
+
+  # ── 北美区 ──
+  US:
+    episode_duration_seconds: 45            # 英文短剧每集 45 秒
+    episode_duration_max: 60                # 英文短剧每集最多 60 秒
+    narrative_pacing: "moderate"            # 慢节奏铺垫
+    golden_3_second_hook: true
+    hook_density_seconds: 20                # 每 20 秒一个钩子
+    reading_direction: "ltr"
+    default_aspect_ratio: "16:9"            # 横屏优先
+    preferred_formats: ["horizontal_short_video", "vertical_short_video"]
+    best_seller_genres: ["sci_fi", "horror", "thriller", "romance", "superhero"]
+    cultural_sensitive_topics: ["race", "gender", "politics", "religion"]
+    pricing_tier: "tier_1"                  # 标准定价
+
+  # ── 欧洲区 ──
+  EU:
+    episode_duration_seconds: 40            # 欧洲短剧每集 40 秒
+    episode_duration_max: 60
+    narrative_pacing: "slow_burn"           # 慢热铺垫
+    golden_3_second_hook: false
+    hook_density_seconds: 25                # 每 25 秒一个钩子
+    reading_direction: "ltr"
+    default_aspect_ratio: "16:9"            # 横屏优先
+    preferred_formats: ["horizontal_short_video"]
+    best_seller_genres: ["drama", "crime", "historical", "sci_fi"]
+    cultural_sensitive_topics: ["religion", "immigration", "politics", "historical_events"]
+    multilingual_support: true               # 多语言字幕需求高
+    pricing_tier: "tier_1"                  # 标准定价
+
+  # ── 中东及北非区 ──
+  MENA:
+    episode_duration_seconds: 50
+    episode_duration_max: 75
+    narrative_pacing: "moderate"
+    golden_3_second_hook: true
+    hook_density_seconds: 18
+    reading_direction: "rtl"                # 阿拉伯语从右到左
+    default_aspect_ratio: "16:9"
+    preferred_formats: ["horizontal_short_video"]
+    best_seller_genres: ["romance", "family_drama", "historical", "comedy"]
+    cultural_sensitive_topics: ["religion", "gender_roles", "politics", "alcohol", "dating"]
+    content_moderation: "strict"            # 严格内容审核
+    pricing_tier: "tier_2"                  # 中低定价
+
+  # ── 拉丁美洲区 ──
+  LATAM:
+    episode_duration_seconds: 55
+    episode_duration_max: 80
+    narrative_pacing: "fast"                # 拉美用户偏好快节奏
+    golden_3_second_hook: true
+    hook_density_seconds: 16
+    reading_direction: "ltr"
+    default_aspect_ratio: "9:16"            # 竖屏优先
+    preferred_formats: ["vertical_short_video", "horizontal_short_video"]
+    best_seller_genres: ["telenovela", "romance", "comedy", "supernatural"]
+    cultural_sensitive_topics: ["religion", "politics", "crime"]
+    pricing_tier: "tier_3"                  # 低价定价（购买力平价）
+
+# ═══════════════════════════════════════════════════════════════
+# 剧本分级标准（2026 行业通用）
+# 对标抖音集团 S/A+/A 三档 + 七猫 S+ 档 + 行业 B/C 档
+# ═══════════════════════════════════════════════════════════════
+
+rating:
+  tiers:
+    S:
+      label: "头部爆款"
+      guarantee_cny: 50000          # 保底 5 万起
+      guarantee_max_cny: 200000     # 保底最高 20 万
+      revenue_share_pct: 20         # 分成比例
+      criteria: "IP 改编/自带流量，S 级编剧，全平台分发"
+    A_plus:
+      label: "准爆款"
+      guarantee_cny: 30000          # 保底 3 万起
+      guarantee_max_cny: 70000      # 保底最高 7 万
+      revenue_share_pct: 20
+      criteria: "高概念题材，强付费点，多平台分发"
+    A:
+      label: "腰部潜力"
+      guarantee_cny: 10000          # 保底 1 万起
+      guarantee_max_cny: 50000      # 保底最高 5 万
+      revenue_share_pct: 20
+      criteria: "标准题材，单平台主推"
+    B:
+      label: "腰部走量"
+      guarantee_cny: 0              # 无保底
+      revenue_share_pct: 10
+      criteria: "填充内容库，走量"
+    C:
+      label: "底部测试"
+      guarantee_cny: 0              # 无保底
+      revenue_share_pct: 0
+      criteria: "AI 全流程生成，测试新题材"
+
+  # 评级维度权重
+  dimensions:
+    rhythm_density: 30              # 节奏密度（每 30 秒情绪峰值、每集结尾钩子）
+    paywall_design: 25              # 付费点设计（第 8-10 集超级钩子、付费后持续爽点）
+    character_appeal: 20            # 人设鲜明度（主角出场立住、反派动机合理、情感共鸣）
+    producibility: 15               # 可拍性（场景集中度、角色数量、特效需求、预算友好）
+    compliance: 10                  # 合规通过率（不踩红线、价值观正向、版权清晰）

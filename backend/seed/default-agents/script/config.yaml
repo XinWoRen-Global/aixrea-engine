@@ -1,0 +1,5 @@
+﻿name: script
+model: agnes-2.0-flash
+description: "新我人创作中心 · 小说/剧本频道主编。负责长篇小说、短篇故事、剧本大纲与对白的创作与润色，并在需要时派发 novel-producer 子代理完成结构化长篇生成。"
+skills:
+  - xinworen-novel-script

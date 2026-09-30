@@ -1,0 +1,113 @@
+﻿# ═══════════════════════════════════════════════════════════════
+# product-manager Agent 配置
+# 新我人商城交易域 · 商品管理主编（Tier1 Lead Agent）
+# ═══════════════════════════════════════════════════════════════
+
+name: product-manager
+model: agnes-2.0-flash
+description: "新我人商城交易域 · 商品管理主编。负责数字商品（短剧、小说、漫画、音乐、互动内容、AI服务）的上架、审核、定价、库存管理和商品优化，对标亚马逊/Shopify的商品管理能力。管理商品审核、商品优化两个子Agent。"
+
+# ── 工具组 ────────────────────────────────────────────────────
+tool_groups:
+  - xinworen
+  - marketplace
+  - product_management
+
+# ── 运行时 Skills ─────────────────────────────────────────────
+runtime_skills:
+  - xinworen-product-listing
+  - xinworen-product-audit
+  - xinworen-pricing-strategy
+  - xinworen-quality-inspector
+
+# ── 业务约束 ──────────────────────────────────────────────────
+constraints:
+  # 商品管理规范
+  max_products_per_creator: 100
+  max_categories: 20
+  must_have_product_description: true
+  must_have_product_images: true
+  must_have_preview_content: true
+  
+  # 审核规范
+  auto_audit_enabled: true
+  audit_quality_threshold: 4.0
+  must_follow_content_policy: true
+  no_copyright_infringement: true
+  require_human_review_for_sensitive: true
+  
+  # 定价规范
+  min_price_usd: 0.99
+  max_price_usd: 999.99
+  must_have_price_tiers: true
+  dynamic_pricing_enabled: true
+  
+  # 库存规范
+  digital_products_unlimited_stock: true
+  limited_edition_tracking: true
+  
+  # 多语言适配
+  multilingual_handler: "multilingual-agent"
+  source_language: "zh-CN"
+  multilingual_trigger: "async"
+  
+  # 发布规范
+  auto_publish: false
+  require_human_review: true
+  scheduled_publish: true
+
+# ── 测试模式路由 ─────────────────────────────────────────────
+routing:
+  test:
+    enabled: false
+    model_overrides:
+      text: "deepseek-v4-flash"
+    zero_billing: true
+
+# ── 多区域适配 ────────────────────────────────────────────────
+regions:
+  CN:
+    preferred_categories: ["短剧", "小说", "漫画", "音乐", "AI服务"]
+    price_range: "¥9.9-¥999"
+    payment_methods: ["微信支付", "支付宝", "信用卡"]
+    currency: "CNY"
+  
+  APAC:
+    preferred_categories: ["short_drama", "novel", "comic", "music", "ai_service"]
+    price_range: "$1.99-$199.99"
+    payment_methods: ["credit_card", "local_wallets", "alipay"]
+    currency: "USD"
+  
+  US:
+    preferred_categories: ["short_drama", "novel", "comic", "music", "ai_service", "interactive"]
+    price_range: "$2.99-$499.99"
+    payment_methods: ["credit_card", "apple_pay", "google_pay", "paypal"]
+    currency: "USD"
+  
+  EU:
+    preferred_categories: ["short_drama", "novel", "comic", "music", "ai_service"]
+    price_range: "€2.99-€499.99"
+    payment_methods: ["credit_card", "apple_pay", "google_pay", "sepa"]
+    currency: "EUR"
+
+# ── 分级标准 ──────────────────────────────────────────────────
+rating:
+  tiers:
+    S:
+      label: "头部爆款"
+      criteria: "高销量，高评分，IP改编潜力"
+    A:
+      label: "优质商品"
+      criteria: "稳定销量，高评分"
+    B:
+      label: "腰部商品"
+      criteria: "中等销量，标准质量"
+    C:
+      label: "长尾商品"
+      criteria: "低销量，测试商品"
+  dimensions:
+    content_quality: 30
+    market_demand: 25
+    pricing_competitiveness: 20
+    creator_reputation: 15
+    compliance: 10

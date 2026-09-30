@@ -1,0 +1,176 @@
+# ═══════════════════════════════════════════════════════════════
+# interactive-executor Agent 配置
+# 对标橙光/易次元/互动叙事：4 相位线性执行器
+# ═══════════════════════════════════════════════════════════════
+
+name: interactive-executor
+model: agnes-2.0-flash
+description: "新我人创作中心 · 互动影游线性执行器（4 步线性流）。收到 album_id 后按 analyze→assets→build→compose 固定顺序调用相位工具，全程不与用户对话，跑完汇报结果。工具直接调用自有管线 API，零外部工具费用。多语言适配由独立 multilingual Agent 处理。"
+
+# ── 工具组 ────────────────────────────────────────────────────
+tool_groups:
+  - interactive_executor
+
+# ── 运行时加载的 Skills（SKILL.md 合并为执行器规则源，按域隔离） ─────────
+# 架构规范：每个执行器声明自己的 SKILL.md，执行引擎按名读取归档到运行时真理源。
+# 互动执行器只启用互动的 SKILL，绝不加载剧本/音乐/漫画等其他域的 SKILL（防串模）。
+runtime_skills:
+  - xinworen-pipeline-execution   # 通用管线执行协议（首轮推荐块 → 等确认 → task 派发、幂等重入）
+  - xinworen-interactive-game     # 互动影游作业规范（分支剧情/好感度/结局拆分/多结局）
+
+# ═══════════════════════════════════════════════════════════════
+# 商业化互动影游约束（对标橙光/易次元/互动叙事平台头部作品标准）
+# 所有约束在运行时由 agent + tools.py 共同校验
+# ═══════════════════════════════════════════════════════════════
+
+constraints:
+  # ── 内容规范 ──
+  main_story_words_min: 5000              # 主线剧情最少字数
+  main_story_words_max: 30000             # 主线剧情最多字数
+  scene_words_min: 200                    # 每段场景最少字数
+  scene_words_max: 800                    # 每段场景最多字数
+  branch_count_min: 3                     # 主要分支 ≥ 3 条
+  endings_per_branch_min: 2               # 每条分支 2-3 个结局
+  endings_per_branch_max: 3
+  branch_depth_min: 2                     # 至少 2 层嵌套选择
+  player_choice_interval: 5               # 每 3-5 段场景 1 次选择
+  choice_choice_interval_min: 3
+  choice_choice_interval_max: 5
+  choice_feedback_immediate: true         # 选择后立即反馈
+  ending_types:                           # 结局类型
+    - happy_ending
+    - bad_ending
+    - hidden_ending
+  compliance_red_lines:                   # 合规红线（一票否决）
+    - no_pornography
+    - no_excessive_violence
+    - no_gambling
+    - no_political_sensitivity
+  age_rating:                             # 年龄分级
+    min: "12+"
+    auto_label: true
+    allowed_ratings:
+      - "12+"
+      - "16+"
+      - "18+"
+
+  # ── 交互规范 ──
+  choice_types:                           # 选择类型四类交替
+    - moral_dilemma
+    - strategic_choice
+    - character_affection
+    - time_pressure
+  choice_has_consequences: true           # 每个选择影响后续剧情
+  affection_system_characters_min: 2      # 至少 2 个可交互角色好感度
+  auto_save: true                         # 自动存档
+  manual_save_slots: true                 # 手动存档槽位
+  key_choice_hint: true                   # 关键选择前有提示标记
+
+  # ── 视觉规范 ──
+  character_portrait_per_character: 1     # 每个主要角色 1 张立绘
+  expression_variations_min: 3            # 表情差分 ≥ 3 种
+  scene_background_per_scene: 1           # 每个场景 1 张背景图
+  ui_orientation: "portrait"              # 竖屏优先
+  ui_aspect_ratio: "9:16"                 # 竖屏 9:16 画幅
+  font_chinese: "separate"                # 中文字体独立
+  font_english: "separate"                # 英文字体独立
+  transition_animation: true              # 场景切换淡入淡出
+
+  # ── 技术规范 ──
+  output_format: "html5"                  # HTML5 可独立运行
+  bundle_size_max_mb: 50                  # 包体最大 50MB
+  first_screen_load_max_mb: 5             # 首屏加载 ≤ 5MB
+  first_screen_load_seconds: 3            # 首屏加载 ≤ 3 秒
+  interaction_response_ms: 500            # 交互响应 ≤ 500ms
+  lazy_load_resources: true               # 按需加载资源
+
+  # ── 资产规范 ──
+  asset_binding: "album_id"               # 资产绑定方式（project_id = album_id）
+  asset_storage_class: "buffer"           # 默认 buffer（30 天 lifecycle）
+
+  # ── Seed 一致性（角色/场景跨分支变体） ──
+  seed_enabled: true                      # 启用 Seed 变体能力（角色立绘/表情差分/场景）
+  seed_skill: "xinworen-character-seed"   # 复用工建 Seed Skill
+  seed_inject: "minimal_high_signal"      # 注入最小高信号子集（每角色 1 最佳立绘 + 1 表情差分 + 1 场景）
+  seed_first_frame_from_identity: true    # identity 最佳立绘优先作剧情树/立绘首帧
+  seed_similarity_threshold: 0.82         # 底图 vs 差分图一致性回检阈值
+  seed_retry_once: true                   # 回检不达标重试 1 次（换参考/强化立绘 prompt）
+  seed_no_identity_fallback: "L1_prompt"  # 无 Seed 时走提示词锚定立绘（L1）
+
+  # ── 多语言适配 ──
+  multilingual_handler: "multilingual-agent"  # 多语言由独立 Agent 处理
+  source_language: "zh-CN"                    # 源语言
+  multilingual_trigger: "async"               # 合成完成后异步触发
+
+# ═══════════════════════════════════════════════════════════════
+# 多区域适配（Region-Specific Overrides）
+# 全球 6 大区：CN / APAC / US / EU / MENA / LATAM
+# ═══════════════════════════════════════════════════════════════
+
+regions:
+  CN:
+    main_story_words_min: 5000
+    main_story_words_max: 30000
+    scene_words_min: 200
+    scene_words_max: 800
+    branch_count_min: 3
+    endings_per_branch_min: 2
+    ui_orientation: "portrait"
+    ui_aspect_ratio: "9:16"
+    preferred_genres: ["romance", "fantasy", "ancient_costume", "suspense"]
+
+  APAC:
+    main_story_words_min: 3000
+    main_story_words_max: 20000
+    scene_words_min: 150
+    scene_words_max: 600
+    branch_count_min: 3
+    endings_per_branch_min: 2
+    ui_orientation: "portrait"
+    ui_aspect_ratio: "9:16"
+    preferred_genres: ["visual_novel", "romance", "fantasy", "mystery"]
+
+  US:
+    main_story_words_min: 3000
+    main_story_words_max: 20000
+    scene_words_min: 150
+    scene_words_max: 600
+    branch_count_min: 3
+    endings_per_branch_min: 2
+    ui_orientation: "landscape"
+    ui_aspect_ratio: "16:9"
+    preferred_genres: ["sci-fi", "horror", "thriller", "romance", "adventure"]
+
+  EU:
+    main_story_words_min: 2500
+    main_story_words_max: 15000
+    scene_words_min: 150
+    scene_words_max: 500
+    branch_count_min: 3
+    endings_per_branch_min: 2
+    ui_orientation: "landscape"
+    ui_aspect_ratio: "16:9"
+    preferred_genres: ["drama", "crime", "historical", "psychological"]
+
+  MENA:
+    main_story_words_min: 2000
+    main_story_words_max: 12000
+    scene_words_min: 100
+    scene_words_max: 400
+    branch_count_min: 2
+    endings_per_branch_min: 2
+    ui_orientation: "landscape"
+    ui_aspect_ratio: "16:9"
+    preferred_genres: ["family_drama", "romance", "historical", "comedy"]
+    content_moderation: "strict"
+
+  LATAM:
+    main_story_words_min: 3000
+    main_story_words_max: 18000
+    scene_words_min: 150
+    scene_words_max: 600
+    branch_count_min: 3
+    endings_per_branch_min: 2
+    ui_orientation: "portrait"
+    ui_aspect_ratio: "9:16"
+    preferred_genres: ["telenovela", "romance", "fantasy", "supernatural"]

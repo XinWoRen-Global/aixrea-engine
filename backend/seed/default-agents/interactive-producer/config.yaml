@@ -1,0 +1,87 @@
+﻿# ═══════════════════════════════════════════════════════════════
+# interactive-producer Agent 配置
+# 新我人创作中心 · 互动内容生产执行导演（Tier2 Subagent，被Lead派发）
+# ═══════════════════════════════════════════════════════════════
+
+name: interactive-producer
+model: agnes-2.0-flash
+description: "新我人创作中心 · 互动内容生产执行导演。负责把互动内容大纲转化为具体的分支剧情、选择节点和结局，驱动文本生成模型完成互动内容创作，并管理分支逻辑验证和持久化存储。被interactive主编派发，纯执行不与用户对话。"
+
+# ── 工具组 ────────────────────────────────────────────────────
+tool_groups:
+  - xinworen
+  - interactive_executor
+
+# ── 运行时 Skills ─────────────────────────────────────────────
+runtime_skills:
+  - xinworen-branch-generation
+  - xinworen-interactive-logic
+  - xinworen-quality-inspector
+
+# ── 业务约束 ──────────────────────────────────────────────────
+constraints:
+  # 生产者职责约束
+  must_follow_lead_direction: true
+  no_user_interaction: true
+  must_report_to_lead: true
+  
+  # 互动内容生成约束
+  max_branches_per_project: 20
+  recommended_branches: 8
+  max_endings: 10
+  recommended_endings: 5
+  min_playtime_minutes: 30
+  recommended_playtime_minutes: 60
+  branch_quality_threshold: 4.0
+  
+  # 分支设计规范
+  must_have_meaningful_choices: true
+  no_dead_ends: true
+  choices_must_affect_story: true
+  must_validate_branch_logic: true
+  all_paths_must_reach_ending: true
+  
+  # 内容规范
+  must_follow_content_policy: true
+  must_original_content: true
+  
+  # 持久化规范
+  content_storage_class: "permanent"
+  content_bucket_prefix: "interactive/"
+  content_format: "json"
+  branch_graph_format: "directed_acyclic_graph"
+  
+  # 多语言适配
+  multilingual_handler: "multilingual-agent"
+  source_language: "zh-CN"
+  multilingual_trigger: "async"
+
+# ── 测试模式路由 ─────────────────────────────────────────────
+routing:
+  test:
+    enabled: false
+    model_overrides:
+      text: "deepseek-v4-flash"
+    zero_billing: true
+
+# ── 多区域适配 ────────────────────────────────────────────────
+regions:
+  CN:
+    preferred_formats: ["互动小说", "互动剧", "文字冒险"]
+    branch_complexity: "medium"
+    monetization: "付费章节+广告+内购"
+  
+  APAC:
+    preferred_formats: ["visual_novel", "interactive_drama"]
+    branch_complexity: "high"
+    monetization: "付费+内购"
+  
+  US:
+    preferred_formats: ["interactive_fiction", "choice-based_game"]
+    branch_complexity: "very_high"
+    monetization: "premium+DLC"
+  
+  EU:
+    preferred_formats: ["interactive_fiction", "narrative_game"]
+    branch_complexity: "high"
+    monetization: "premium+subscription"

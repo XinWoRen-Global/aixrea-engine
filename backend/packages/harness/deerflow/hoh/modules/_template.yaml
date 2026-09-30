@@ -1,0 +1,22 @@
+# HoH module template — copy this file to onboard a new module.
+#
+# Rename to <your_module>.yaml in this directory.
+# Set enabled: true to activate.
+#
+# Minimal required fields: name, display_name, entry.
+# Everything else has sensible defaults.
+
+name: _template
+display_name: 我的新模块
+developer_kind: pipeline       # pipeline | lead_agent | tool
+entry: deerflow.pipeline.executor:PipelineExecutor
+tools_allowlist:
+  - my_tool_1
+  - my_tool_2
+qa_blackbox:
+  - name: health_check
+    rule: "artifact.metric.health == true"
+qa_whitebox: []
+evidence_ttl_days: 30
+cost_budget_per_loop_usd: 0.50
+enabled: false                  # flip to true when ready
