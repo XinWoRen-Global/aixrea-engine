@@ -150,7 +150,7 @@ Les développeurs d'outils sont des **créateurs** sur la plateforme. Les revenu
 | Gold / Platinum | 70% | 30% |
 
 - **Aucun système de commission séparé** — un compte, un niveau, tous les types de revenus unifiés
-- **Paiement** : Mensuel via Stripe, minimum 10 $
+- **Paiement** : Mensuel via Stripe, minimum 100 $
 - **Aucune exclusivité** : Publiez vos compétences partout
 - **Vous conservez la propriété** de votre code de compétence
 

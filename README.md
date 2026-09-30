@@ -1,58 +1,112 @@
-﻿# Aixrea Engine — Multi-Agent Orchestration Framework
+﻿# Aixrea Engine — Production-Grade Multi-Agent Orchestration Framework for LLM Apps
 
-> Production-grade agent harness for building AI-powered products.
-> Orchestrate sub-agents, memory, sandboxes, and extensible skills — powered by LangGraph.
+> The open-source **super agent harness** for building production AI applications. Orchestrate autonomous agents, persistent memory, code sandboxes, and extensible skills — powered by LangGraph. An alternative to LangChain agents, CrewAI, and AutoGPT for production workloads.
 
 [![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)](./backend/pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Framework: LangGraph](https://img.shields.io/badge/Framework-LangGraph-FF6B6B)](https://langchain-ai.github.io/langgraph/)
+[![Multi-Agent](https://img.shields.io/badge/Multi--Agent-✓-brightgreen)]()
+[![DAG Workflow](https://img.shields.io/badge/DAG-Workflow-blue)]()
+[![RAG Ready](https://img.shields.io/badge/RAG-Ready-orange)]()
 
 **English** | [中文](README.zh-CN.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [Русский](README.ru.md)
 
 ---
 
+## ⭐ Why Star Aixrea Engine?
+
+If you're building **LLM-powered applications** that need to go beyond demo-grade chatbots, Aixrea Engine gives you:
+
+- **Production reliability** — deterministic DAG execution with checkpoint recovery, not just ReAct loops
+- **Multi-agent orchestration** — a Lead Agent coordinates specialized sub-agents with 15+ middleware
+- **Real memory** — short-term, long-term, and summary memory with Redis persistence
+- **Skill marketplace** — build, publish, and monetize AI tools as reusable skills
+- **Billing-ready** — token tracking and credits ledger for SaaS monetization
+- **Content guardrails** — pluggable moderation for AI output safety
+
+Built on **LangGraph** for reliable, recoverable agent workflows. Battle-tested in production at [aixrea.com](https://aixrea.com) and [xinworen.com](https://xinworen.com), powering thousands of AI content creation workflows (drama, music, comics, novels, interactive stories).
+
+---
+
 ## What is Aixrea Engine?
 
-Aixrea Engine is an open-source **super agent harness** that orchestrates **sub-agents**, **memory**, and **sandboxes** to build production AI applications. It provides a flexible, extensible foundation for:
+Aixrea Engine is an open-source **agent runtime and orchestration framework** for building production-grade **autonomous AI agents**, **LLM applications**, and **AI agent workflows**. It provides a flexible, extensible foundation for:
 
-- 🤖 **Multi-agent orchestration** — Lead Agent coordinates specialized sub-agents
-- 🧠 **Persistent memory** — Short-term, long-term, and summary memory
-- 🛠️ **Extensible skills** — Build and publish AI tools as reusable skills
-- 🔄 **DAG pipelines** — Deterministic workflow execution for content creation
-- 🔒 **Content guardrails** — Pluggable moderation framework for AI output
-- 💬 **Community IM** — Real-time chat with AI employees
+- 🤖 **Multi-agent orchestration** — Lead Agent coordinates specialized sub-agents with 15+ middleware (memory, summary, todo, loop detection, sub-agent limits)
+- 🧠 **Persistent memory** — Short-term, long-term, and summary memory with Redis persistence for RAG and context management
+- 🛠️ **Extensible skills / tool use** — Build and publish AI tools as reusable skills with function calling and structured output
+- 🔄 **DAG pipelines / workflow automation** — Deterministic workflow execution for content creation, data processing, and agentic automation
+- 🔒 **Content guardrails / AI safety** — Pluggable moderation framework for AI output compliance
+- 💬 **Community IM / AI employees** — Real-time chat with autonomous AI agents
+- 📊 **Token tracking & billing** — Built-in TokenTracker with Redis persistence for usage-based pricing
+- 🔌 **AIGateway / model routing** — Multi-model abstraction with fallback and provider-agnostic LLM support
 
-Built on **LangGraph** for reliable, recoverable agent workflows.
+Aixrea Engine is designed for teams building **AI SaaS**, **autonomous agents**, **RAG pipelines**, **AI copilots**, **content generation systems**, and **agentic workflows** that need to run reliably in production.
+
+---
+
+## Who is it for?
+
+| Role | Use Case |
+|---|---|
+| **AI Startup founders** | Build production AI SaaS with billing, multi-tenancy, and skill marketplace |
+| **ML/AI Engineers** | Orchestrate multi-agent systems with deterministic DAG + ReAct hybrid control |
+| **Backend Developers** | Add AI agent capabilities to existing products via FastAPI gateway |
+| **Content Platforms** | Automate content creation pipelines (text, image, audio, video) |
+| **Enterprise AI teams** | Deploy internal AI copilots with guardrails, audit trails, and access control |
+
+---
+
+## Comparison with Other Agent Frameworks
+
+| Feature | Aixrea Engine | LangChain Agents | CrewAI | AutoGPT | LangGraph (raw) |
+|---|---|---|---|---|---|
+| Multi-agent orchestration | ✅ Built-in | ⚠️ Manual | ✅ Built-in | ⚠️ Limited | ❌ Manual |
+| Deterministic DAG control | ✅ First-class | ❌ ReAct only | ❌ ReAct only | ❌ ReAct only | ✅ First-class |
+| Persistent memory (Redis) | ✅ Built-in | ⚠️ Manual | ⚠️ Limited | ❌ No | ❌ Manual |
+| Skill marketplace / monetization | ✅ Built-in | ❌ No | ❌ No | ❌ No | ❌ No |
+| Token tracking & billing | ✅ Built-in | ❌ No | ❌ No | ❌ No | ❌ No |
+| Content guardrails | ✅ Built-in | ❌ No | ❌ No | ❌ No | ❌ No |
+| Code execution sandbox | ✅ Built-in | ⚠️ Manual | ⚠️ Manual | ✅ Built-in | ❌ Manual |
+| Production FastAPI server | ✅ Built-in | ❌ No | ❌ No | ❌ No | ❌ No |
+| OpenTelemetry tracing | ✅ Built-in | ⚠️ Callback | ❌ No | ❌ No | ❌ Manual |
+| Based on LangGraph | ✅ Yes | ❌ No | ❌ No | ❌ No | ✅ N/A |
+
+> **Key difference**: Aixrea Engine combines **LangGraph's deterministic DAG** with **ReAct's flexibility** in a three-layer control model, plus production infrastructure (memory, billing, sandbox, guardrails) that raw LangGraph doesn't provide.
 
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│                   Lead Agent                      │
-│  (Plan-and-Execute + ReAct hybrid, 15+ middleware)│
-├──────────┬──────────┬───────────┬────────────────┤
-│  Memory   │  Skills  │  Sandbox  │  Sub-agents    │
-│  (short/  │  (tool   │  (code    │  (specialized  │
-│   long/    │  market) │   exec)   │   workers)     │
-│   summary) │          │           │                │
-├──────────┴──────────┴───────────┴────────────────┤
-│              PipelineExecutor (DAG)                │
-│     (deterministic workflows for content creation)  │
-├────────────────────────────────────────────────────┤
-│              AIGateway (model routing)              │
-│     (multi-model abstraction, fallback, tracking)   │
-└────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                      Lead Agent                              │
+│  (Plan-and-Execute + ReAct hybrid, 15+ middleware)           │
+│  memory │ summary │ todo │ loop-detection │ sub-agent-limits  │
+├──────────┬──────────┬───────────┬────────────────────────────┤
+│  Memory   │  Skills  │  Sandbox  │  Sub-agents                │
+│  (short/  │  (tool   │  (code    │  (specialized workers)     │
+│   long/    │  market) │   exec)   │                            │
+│   summary) │          │           │                            │
+├──────────┴──────────┴───────────┴────────────────────────────┤
+│              PipelineExecutor (DAG)                           │
+│     (deterministic workflows for content creation)             │
+├───────────────────────────────────────────────────────────────┤
+│              AIGateway (model routing)                         │
+│     (multi-model abstraction, fallback, token tracking)        │
+├───────────────────────────────────────────────────────────────┤
+│              CreditsLedger / TokenTracker                      │
+│     (usage metering, billing, rate limiting)                   │
+└───────────────────────────────────────────────────────────────┘
 ```
 
 ### Three-Layer Control Model
 
 | Layer | Pattern | Use Case |
 |---|---|---|
-| **Workflow Graph** | DAG (deterministic) | Main execution trunk, billing, recovery |
-| **Plan-and-Execute** | Task decomposition | Complex multi-step tasks |
-| **ReAct** | Local exploration | Unknown environments, tool discovery |
+| **Workflow Graph** | DAG (deterministic) | Main execution trunk, billing, checkpoint recovery |
+| **Plan-and-Execute** | Task decomposition | Complex multi-step tasks, RAG pipelines |
+| **ReAct** | Local exploration | Unknown environments, tool discovery, function calling |
 
 ---
 
@@ -63,14 +117,14 @@ Built on **LangGraph** for reliable, recoverable agent workflows.
 - Python 3.12+
 - Node.js 22+ (for frontend/tooling)
 - Redis (for memory/cache)
-- An LLM API key (OpenAI, Anthropic, or compatible)
+- An LLM API key (OpenAI, Anthropic, or any OpenAI-compatible endpoint)
 
 ### Installation
 
 ```bash
 # Clone
-git clone https://github.com/aixrea/engine.git
-cd engine
+git clone https://github.com/XinWoRen-Global/aixrea-engine.git
+cd aixrea-engine
 
 # Install backend dependencies
 cd backend
@@ -97,11 +151,11 @@ agent = LeadAgent(
 )
 
 # Run
-result = await agent.run("Research the top 3 AI frameworks in 2026")
+result = await agent.run("Research the top 3 AI agent frameworks in 2026 and compare them")
 print(result.summary)
 ```
 
-See [`examples/`](./examples) for more.
+See [`examples/`](./examples) for more, including multi-agent workflows, RAG pipelines, and skill development.
 
 ---
 
@@ -110,26 +164,28 @@ See [`examples/`](./examples) for more.
 | Module | Description | Status |
 |---|---|---|
 | `agents.lead_agent` | Core execution engine with 15+ middleware | ✅ Stable |
-| `agents.memory` | Short/long-term/summary memory | ✅ Stable |
-| `agents.subagents` | Sub-agent orchestration | ✅ Stable |
-| `runtime` | FastAPI server, auth, config | ✅ Stable |
-| `skills` | Skill registry and execution framework | ✅ Stable |
-| `sandbox` | Code execution sandbox | ⚠️ Preview |
-| `guardrails` | Content moderation framework | ⚠️ Preview |
-| `persistence` | Database persistence layer | ✅ Stable |
-| `tracing` | OpenTelemetry tracing | ✅ Stable |
-| `scheduler` | Task scheduling | ⚠️ Preview |
+| `agents.memory` | Short/long-term/summary memory for RAG | ✅ Stable |
+| `agents.subagents` | Sub-agent orchestration for multi-agent systems | ✅ Stable |
+| `runtime` | FastAPI server, auth, config, API gateway | ✅ Stable |
+| `skills` | Skill registry, tool use, function calling framework | ✅ Stable |
+| `sandbox` | Code execution sandbox (E2B / self-hosted) | ⚠️ Preview |
+| `guardrails` | Content moderation / AI safety framework | ⚠️ Preview |
+| `persistence` | Database persistence layer (Postgres) | ✅ Stable |
+| `tracing` | OpenTelemetry distributed tracing | ✅ Stable |
+| `scheduler` | Task scheduling / cron for agentic automation | ⚠️ Preview |
+| `gateway` | AIGateway multi-model routing with fallback | ✅ Stable |
+| `credits` | TokenTracker + CreditsLedger for usage billing | ✅ Stable |
 
 ---
 
-## Skills System
+## Skills System / Tool Use
 
-Build and publish AI tools as reusable skills:
+Build and publish AI tools as reusable skills with structured function calling:
 
 ```python
 from aixrea_engine import skill, SkillContext
 
-@skill(name="web_search", description="Search the web")
+@skill(name="web_search", description="Search the web for information")
 async def web_search(ctx: SkillContext, query: str) -> str:
     # Your implementation
     return results
@@ -150,13 +206,38 @@ Tool developers are **creators** on the platform. Skill revenue follows the exis
 | Gold / Platinum | 70% | 30% |
 
 - **No separate commission system** — one account, one tier, all revenue types unified
-- **Payout**: Monthly via Stripe, $10 minimum
+- **Payout**: Monthly via Stripe, **$100 minimum**
 - **No exclusivity**: Publish your skills anywhere
 - **You retain ownership** of your skill code
 
 Affiliate referrals follow the existing affiliate program (up to 25%, 30-day cookie).
 
 See [COMMERCIAL.md](./COMMERCIAL.md) for details.
+
+---
+
+## Open Source vs Commercial Platform
+
+This repository contains the **open-source framework** (Aixrea Engine). The commercial platform running at [aixrea.com](https://aixrea.com) and [xinworen.com](https://xinworen.com) includes additional proprietary modules:
+
+| Layer | Open Source (this repo) | Commercial Platform |
+|---|---|---|
+| Agent framework / runtime | ✅ | ✅ |
+| Skill SDK / tool use | ✅ | ✅ |
+| Pipeline DAG executor | ✅ | ✅ |
+| Content guardrail framework | ✅ | ✅ |
+| Multi-agent orchestration | ✅ | ✅ |
+| Persistent memory (Redis) | ✅ | ✅ |
+| Billing / credits ledger | ❌ | ✅ |
+| Marketplace / store frontend | ❌ | ✅ |
+| Content distribution | ❌ | ✅ |
+| Recommendation engine | ❌ | ✅ |
+| Multi-domain routing (CN/global) | ❌ | ✅ |
+| Creation tools (drama/music/comic/novel) | ❌ | ✅ |
+| User dashboard / analytics | ❌ | ✅ |
+| Managed hosting / SLA | ❌ | ✅ |
+
+Open-source repo: [github.com/XinWoRen-Global/aixrea-engine](https://github.com/XinWoRen-Global/aixrea-engine)
 
 ---
 
@@ -178,7 +259,17 @@ Contact: `contact@xinworen.com`
 
 We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
-**Note**: This project is currently in **read-only open source** mode. We release the code for transparency and learning, but we are not accepting pull requests at this time. Please open issues for bug reports and feature requests.
+**Note**: This project is currently in **read-only open source** mode. We release the code for transparency and learning, but we are not accepting pull requests at this time. Please open issues for bug reports and feature requests — we read every one.
+
+---
+
+## Roadmap
+
+- **v2.0** (current) — Core framework stable, 5-language docs, skill SDK
+- **v2.1** — Skill marketplace Beta, creator revenue share live
+- **v2.2** — More sandbox providers (E2B / self-hosted), enhanced RAG
+- **v2.3** — Multi-modal native support (video/audio/image pipelines)
+- **v3.0** — Full agentic automation platform with visual workflow builder
 
 ---
 
@@ -191,3 +282,5 @@ We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for gu
 > Built with LangGraph. Powered by the global creator community.
 > [aixrea.com](https://aixrea.com) · [xinworen.com](https://xinworen.com)
 > XinWoRen (新我人) — AI creation platform for global creators
+>
+> Keywords: AI agent framework, multi-agent orchestration, LLM apps, autonomous agents, agentic AI, LangGraph, LangChain alternative, CrewAI alternative, AutoGPT alternative, RAG, function calling, tool use, DAG workflow, production AI, AI SaaS, FastAPI, Python, open source
